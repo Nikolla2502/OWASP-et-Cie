@@ -19,8 +19,8 @@
             <li><strong><a href="#security_rule">1.2 Identifiez les règles de sécurité à appliquer par les entreprises</a></strong></li>
             <li><strong><a href="#owasp">1.3 Découvrez l'Open Web Application Security Project (OWASP)</a></strong></li>
             <li><strong><a href="#injection">2.1 Protégez votre code contre l’injection</a></strong></li>
-            <li><strong><a href="#"></a></strong></li>
-            <li><strong><a href="#"></a></strong></li>
+            <li><strong><a href="#session">2.2 Empêchez le piratage de session</a></strong></li>
+            <li><strong><a href="#transit_data">2.3 Protégez les données en transit</a></strong></li>
             <li><strong><a href="#"></a></strong></li>
         </ul>
       </div>
@@ -34,6 +34,9 @@
           <li><a href="https://www.cnil.fr/" target="_blank">CNIL</a></li>
           <li><a href="https://owasp.org/" target="_blank">L'OWASP</a></li>
           <li><a href="https://owasp.org/www-project-top-ten/2017/" target='_blank'>OWASP Recommendation</a></li>
+          <li><a href="https://security.googleblog.com/2018/02/a-secure-web-is-here-to-stay.html" target='_blank'>HTTPS recommandations de Google</a></li>
+          <li><a href="https://www.openssl.org/" target='_blank'>OpenSSL</a></li>
+          <li><a href="https://www.zaproxy.org/docs/desktop/ui/dialogs/options/dynsslcert/" target='_blank'>SSL tutoriel</a></li>
           
         </ul>
       </div>
@@ -162,7 +165,7 @@ Les vulnérabilités présentes dans le Top Ten existent dans les applications w
 Il n'existe pas de langage de programmation exempt de vulnérabilités.<br>
 Voici les 10 attaques les plus fréquentes contre les applications web, selon le Top Ten de l’OWASP en 2017.
 <ol>
-<li href="#injection"><strong>Injection</strong><br>
+<li><strong>Injection</strong><br>
   Une attaque par injection est une attaque permettant l’injection de code arbitraire dans l’application.<br>
   Cela se produit lorsque des données non maîtrisées sont exécutées par le moteur présent sur le backend de l’application.<br>
   Les données de l’attaquant sont exécutées sans autorisations adéquates.<br>
@@ -171,12 +174,15 @@ Voici les 10 attaques les plus fréquentes contre les applications web, selon le
 <li><strong>Piratage de session</strong><br>
   Beaucoup d'applications exigent qu'un utilisateur se connecte pour arriver sur des pages auxquelles lui seul a accès.<br>
   L’application est vulnérable à une attaque si un utilisateur malveillant peut obtenir un accès non autorisé aux mots de passe, clés et jetons pour pirater la session d'un autre utilisateur.</li>
+  <strong><a href="#session">2.2 Empêchez le piratage de session</a></strong>
+
 <li><strong>Exposition de données sensibles</strong><br>
   Les données stockées ou échangées via une application doivent être protégées pour éviter l’interception par une personne malveillante.<br>
   Les bases de données qui enregistrent les données personnelles, les données de cartes de crédit, les noms d'utilisateur et les mots de passe représentent une cible de choix pour un pirate.<br>
   Si ces données ne sont pas chiffrées, elles ne sont pas sécurisées et peuvent être récupérées lorsqu’elles sont en transit par exemple.<br>
   L'utilisation de techniques de chiffrement et de pratiques de sécurité peut atténuer ce type d’attaques.
 </li>
+<strong><a href="#transit_data">2.3 Protégez les données en transit</a></strong>
 <li><strong>Entités externes XML (XXE)</strong><br>
   Le format XML permet de faciliter l’échange de données sous forme d'arborescence.<br>
   Il est largement utilisé sur Internet.<br>
@@ -382,34 +388,332 @@ Elle peut être utilisée pour sécuriser vos applications web.<br><br>
 <li>Les procédures SQL dynamiques peuvent être dangereuses, donc assurez-vous d'utiliser la fonction executesql() dans la base de données pour les sécuriser.</li>
 </ul>
 
+    <h5><a href="#sommaire">Sommaire</a></h5>
+  
+    <h2 id="session">2.2 Empêchez le piratage de session</h2>
+    L’authentification est une fonctionnalité cruciale dans votre application web pour permettre à vos utilisateurs d’accéder à leur données et à leur environnement.<br>
+    Dans ce chapitre, nous allons voir comment sécuriser l’authentification.
+    <h3>Définissez le piratage de session</h3>
+    Le piratage de session (ou Broken Authentication) est l’attaque qui occupe la deuxième place du classement de l’OWASP depuis 2013.<br>
+    Considérant qu'elle occupait la troisième place en 2010, l'OWASP démontre que l’exploitation de l’authentification est une faille courante.<br><br>
+    Supposons que vous ayez un site qui exige que vous vous connectiez avec votre nom d'utilisateur et votre mot de passe pour accéder aux pages qui contiennent des informations sur votre compte.<br>
+    Lorsque vous vous connectez, les informations d'identification sont transmises à la base de données.<br>
+    Si le nom d'utilisateur et le mot de passe correspondent à ceux de la base de données, vous serez authentifiés pour une session.<br><br>
+    <div class="remarque">
+      Une session est une période de temps spécifiée pendant laquelle un utilisateur authentifié aura accès à des pages et à des activités spécifiques de l'application.
+    </div> <br><br>
+    À tout moment du processus d'authentification, un utilisateur malveillant peut obtenir un accès non autorisé à la session et avoir accès à des données sensibles.<br>
+    Une session peut inclure des données personnelles, des données financières et l'accès à des informations protégées ou à des secrets commerciaux, par exemple.<br>
+    Le piratage de l’authentification peut être automatisé avec l’utilisation de la technique de force brute, c’est-à-dire l’utilisation d’une multitude de couples identifiant/mot de passe de manière automatique, jusqu’à obtenir le bon.<br>
+    Lorsqu'un utilisateur malveillant a un accès non autorisé à une liste de noms d'utilisateur et de mots de passe, une attaque appelée credential stuffing peut être utilisée pour essayer toutes les combinaisons de noms d'utilisateur et de mots de passe, jusqu'à ce que le pirate s'authentifie.<br><br>
+    <div class="remarque">
+      Le credential stuffing est un type d’attaque où des informations de comptes volées,<br>
+      généralement des listes d'identifiants et des mots de passe associés,<br>
+      sont utilisés pour obtenir un accès non autorisé à des comptes utilisateurs par le biais de demandes de connexion automatisée adressées à des applications web.
+    </div><br><br>
+
+<h3>Appréhendez l'utilisation de cookies</h3>
+Un cookie HTTP (également appelé cookie web, cookie Internet, cookie de navigateur ou simplement cookie) est une petite donnée envoyée depuis un site web et stockée sur l'ordinateur de l'utilisateur par un navigateur web lorsque l'utilisateur navigue.<br>
+Les cookies ont été conçus pour constituer un mécanisme fiable permettant aux sites web de mémoriser des informations importantes (telles que les éléments ajoutés au panier dans une boutique en ligne) ou d'enregistrer l'activité de navigation de l'utilisateur (en se connectant ou en enregistrant les pages consultées).<br>
+Ils peuvent également être utilisés pour mémoriser des informations arbitraires que l'utilisateur a précédemment entrées dans des champs de formulaire, telles que des noms, des adresses, des mots de passe et des numéros de carte de crédit.<br>
+Voilà pourquoi il représente un intérêt pour un attaquant.<br><br>
+<div class="question">Que se passe-t-il lorsqu'un site demande d'accepter des cookies ?</div>
+Vous vous souvenez peut-être que votre navigateur vous a averti qu'un site web nécessite l'utilisation de cookies pour que vous puissiez l'utiliser ?<br>
+HTTP ne peut pas enregistrer d'informations sur votre navigateur.<br>
+Un cookie est donc un fichier tiers enregistré qui donne un accès personnalisé à l'utilisateur du site.<br>
+Les cookies ont été créés pour vous faciliter la vie, de sorte à ce que vous n’ayez pas besoin de vous reconnecter ou d'entrer les mêmes données encore et encore.<br>
+Ils aident un site web à se souvenir de ce que vous avez fait sur leur site pour personnaliser l'expérience.<br>
+Ces cookies ne sont accessibles que par le site web qui les a créés.<br><br>
+
+Il existe deux types de cookies : les cookies de suivi et les cookies de session.
+<h4>Découvrez les cookies de suivi</h4>
+Les cookies de suivi sont un type de cookie spécifique distribué, partagé et lu sur au moins deux sites web non liés,<br>
+ dans le but de collecter des informations ou éventuellement de vous présenter des données personnalisées.<br><br>
+Supposons que j'achète des biscuits sur un site web appelé koookiestore.com, et qu'il télécharge un cookie sur mon navigateur avec des informations qui m'identifient.<br>
+Toutes mes activités sur ce site seront enregistrées sur koookiestore.com via le cookie qui contient mon identifiant.<br><br>
+<figure>
+  <img src="media/1_cookies.png" alt="">
+  <figcaption>Cookie de suivi</figcaption>
+</figure><br><br>
+Puis, je décide d'aller sur le site funnikaaaats.com, et soudain je vois toutes ces annonces me montrant les biscuits que je regardais sur koookiestore.com !<br>
+Mais seul koookiestore.com peut accéder aux informations des cookies stockées sur son site, alors comment funnikaaaats.com a découvert que j'aime ces cookies ?<br>
+funnikaaaats.com a intégré un code pour koookiestore.com à l'intérieur de son site web afin qu'il puisse accéder à votre cookie koookistore.com.<br>
+Et maintenant, ces informations sont stockées sous ce cookie ID dans koookiestore.com.<br>
+Maintenant, le cookie de suivi de koookiestore.com sait quels cookies et vidéos de chat vous aimez.<br>
+Bien que les cookies de suivi ne peuvent pas être utilisés pour pirater une session, ils peuvent représenter un problème concernant la confidentialité et la vie privée, car ils permettent l’accès à vos habitudes de navigation.
+<h4>Découvrez les cookies de session</h4>
+Les cookies de session contiennent un identifiant qui identifie une session.<br>
+Supposons que vous vous connectez au site web de votre banque et que vous recevez un cookie qui est stocké dans votre navigateur et qui vous garde connecté jusqu'à ce que la session expire.<br>
+Dans ce cas, chaque session reçoit un ID de session.<br>
+L'authentification peut être détournée si l'utilisateur malveillant devine le bon ID de session.<br>
+Avec le protocole HTTP, les sites web n'ont pas la possibilité d'enregistrer des informations d'authentification ou de session sauf s'ils les stockent dans un fichier sur les navigateurs.<br>
+C'est à ça que servent les cookies de session.<br><br>
+Souvent, le navigateur enregistre un cookie qui contient les informations de session, l'ID de session, la date et l'heure d'expiration.<br><br>
+<div class="remarque">
+  Des token peuvent être utilisés pour l'authentification avec le Single Sign-On (SSO).<br>
+  Un utilisateur reçoit un ticket ou un jeton après authentification, afin de se connecter à une session.<br>
+  Le pirate peut accéder au jeton et le réutiliser pour s’authentifier sans avoir besoin d'un nom d'utilisateur ou d'un mot de passe.
+</div>
+<h4>Protégez vos cookies !</h4>
+Voici quelques recommandations pour garantir la sécurité des cookies :
+<ul>
+<li>assurez-vous que les cookies sont chiffrés lors de la transmission via HTTPS ;</li>
+<li>ne stockez pas d'informations d'identification en texte clair dans vos cookies ;</li>
+<li>définissez une date d'expiration pour vos cookies-session.</li>
+</ul>
+
+<h3>Prévenez votre application des authentifications non autorisées</h3>
+Des recommandations simples peuvent être appliquées :
+<ul>
+<li>exigez de vos utilisateurs qu'ils aient un mot de passe fort, c'est-à-dire contenant des majuscules, des minuscules, des chiffres et des caractères spéciaux.<br>
+  Il sera ainsi plus difficile pour un utilisateur malveillant de trouver le mot de passe ;</li>
+<li>il est également recommandé d'exiger des utilisateurs qu'ils changent régulièrement leur mot de passe en cas d’attaque de credential stuffing ;</li>
+<li>mettez en place le verrouillage de compte lorsqu'un utilisateur essaie de se connecter un trop grand nombre de fois sans y parvenir.<br>
+   Cela permet d'empêcher les attaques de force brute ;</li>
+<li>changez ou désactivez les comptes par défaut ;</li>
+<li>implémentez une authentification forte, c’est-à-dire avec plusieurs facteurs d’authentification, comme la validation par SMS ou par mail, par exemple. </li>
+</ul>
+Heureusement, il existe des frameworks pour vous aider à implémenter plus facilement un code sécurisé, quel que soit le langage que vous utilisez :
+<ul>
+<li><strong>ASP.NET Core IdentityFramework</strong> peut être intégré dans votre application web pour personnaliser vos besoins d'authentification.<br>
+   L'ajout d'ASP.NET Core IdentityServer vous permet d'utiliser les techniques de développement sécurisé pour l'authentification par jeton.</li>
+<li><strong>Ruby</strong> a des fonctions (gems) comme omniauth qui peuvent être implémentées pour l'authentification.</li>
+<li><strong>Java</strong> a <strong>javax.security.auth</strong>, et <strong>l'API Java Authentication and Authorization Service (JAAS)</strong>, qui peuvent configurer votre authentification de la bonne façon !</li>
+<li><strong>PHP</strong> a <strong>PHPSec</strong> peuvent être utilisés pour gérer la sécurité et les sessions.</li>
+</ul>
+<h3>Prévenez l'authentification malveillante</h3>
+Voici un exemple d'entrée avant qu'elle ne soit transmise à la base de données.<br>
+<div class="code">
+  //Remove all characters from the email except letters, digits and !#$%&'*+-=?^_`{|}~@.[]<br>
+  echo filter_var($dirtyAddress, FILTER_SANITIZE_EMAIL);
+</div><br><br>
+Une bonne pratique pour la validation des entrées est de vérifier toutes les entrées en supprimant les caractères non pertinents.<br> 
+En Java, vous pouvez créer une méthode pour hacher le mot de passe avec le framework Spring.<br><br>
+<div class="remarque">
+  <strong>Le hachage</strong> permet de générer une empreinte unique pour une entrée.<br>
+  Le problème est qu’il est possible d’utiliser des rainbow tables, c’est-à-dire des listes de hash préalablement calculés, puis de les utiliser avec une attaque de force brute.<br>
+  Pour éviter ce genre d’attaque, il est possible d’ajouter un <strong>sel</strong> permettant d’ajouter une donnée supplémentaire, et ainsi renforcer la sécurité.
+</div><br><br>
+Mais comment faire, concrètement ?<br><br>
+Tout d'abord, vous allez créer un objet pour l'algorithme de chiffrement, et le saler.<br>
+Le salage est une méthode permettant de renforcer la sécurité des informations qui sont destinées à être hachées (par exemple des mots de passe) en y ajoutant une donnée supplémentaire afin d’empêcher que deux informations identiques conduisent à la même empreinte (au même hash).<br>
+Le but du salage est de lutter contre les attaques par analyse fréquentielle (permettant l’analyse des fréquences des caractères employés), les attaques utilisant des rainbow tables, les attaques par dictionnaire et les attaques par force brute.<br>
+Un sel est une séquence aléatoire utilisée en plus du chiffrement pour rendre le hachage imprévisible.<br><br>
+Prenons un exemple :<br>
+<div class="code">
+  MessageDigest md = MessageDigest.getInstance("MD5");<br>
+  md.update(salt);
+</div><br><br>
+Ensuite, vous entrerez votre mot de passe en utilisant l'objet salé pour assigner le hachage formaté à  <div class="inner_code">hashedPassword</div>.<br>
+<div class="code">
+  byte[] hashedPassword = md.digest(passwordToHash.getBytes(StandardCharsets.UTF_8))) ;
+</div><br><br>
+Quel que soit le langage dans lequel vous développez, il existe plusieurs solutions qui peuvent vous permettre de sécuriser votre mécanisme d'authentification !<br>
+Adopter les meilleures pratiques pour la gestion des sessions et des jetons est également important car il s'agit d'une autre forme d'authentification.<br>
+Les cookies de session et les jetons peuvent rendre vos sessions vulnérables.<br>
+Voici quelques conseils pour vous aider à développer vos mécanismes d'identification et de validation de session :
+<ul>
+  <li>ne mettez pas l’ID de session dans l’URL ;</li>
+  <li>limitez la durée de l'ID de session ;</li>
+  <li>modifiez le nom d'ID de session par défaut</li>
+</ul>
+PHP possède une bibliothèque appelée SessionManager avec des fonctions qui peuvent être utilisées pour valider les sessions avec des restrictions.<br>
+Voici un exemple de la fonction  <div class="inner_code">preventHijacking()</div>  du gestionnaire de sessions utilisé pour limiter une session à un hôte et à une adresse IP spécifiques.<br>
+Si l'hôte et l'adresse IP ne sont pas identiques, ils ne s'authentifieront pas.<br>
+Cela permet de sécuriser le mécanisme d'authentification.<br>
+<div class="code">
+  static protected function preventHijacking()<br>
+{<br>
+if(!isset($_SESSION['IPaddress']) || !isset($_SESSION['userAgent']))<br>
+return false;<br>
+if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR'])<br>
+return false;<br>
+if( $_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT'])<br>
+return false;<br>
+return true<br>
+}<br>
+</div>
+
+<h3>Connaissez votre niveau de protection</h3>
+<div class="question"><img src="media/question-circle-regular.svg">Si j'implémente toutes ces règles, mon application web sera-t-elle sécurisée ?</div><br>
+Peu importe le nombre de couches de sécurité et de fonctionnalités que vous ajoutez à votre code, il y a toujours des attaques auxquelles vous ne serez pas préparé.<br>
+Restez informé des nouvelles vulnérabilités afin de sécuriser votre application contre de futures attaques.<br>
+Votre application n'est jamais sûre à 100% car le risque zéro n’existe pas !<br>
+Cependant, en respectant ces règles, vous pouvez prévenir les attaques courantes et réduire votre surface d'attaque de 80 %.<br>
+<h3>En résumé </h3>
+<ul>
+  <li>Le piratage d’authentification peut se produire lorsque les cookies ne sont pas sécurisés.</li>
+  <li>Utilisez la validation des entrées et limitez le nombre d'essais de connexion.</li>
+  <li>Les attaques par force brute et credentials stuffing sont courantes.</li>
+  <li>Protégez les identifiants de session au moyen d’algorithme de chiffrement.</li>
+  <li>Limitez la durée des sessions.</li>
+</ul>
 
 
+    <h5><a href="#sommaire">Sommaire</a></h5>
+  
+    <h2 id="transit_data">2.3 Protégez les données en transit</h2>
+    L'exposition des données sensibles est la troisième vulnérabilité dans le top 10 de l’OWASP.  Les données stockées et transmises dans l’application doivent respecter les bonnes pratiques de sécurité.<br>
+    Dans ce chapitre, nous aborderons la sécurisation des données échangées.
+
+    <h3>Découvrez comment les données transitent la couche de transport</h3>
+    Lorsque vous surfez sur Internet, votre navigateur utilise le les protocole HTTP (Hypertext Transfer Protocol) pour afficher les pages web,<br>
+     et le protocole Transmission Control Protocol/Internet Protocol (TCP/IP) pour les transmettre.<br><br>
+     Imaginons que vous tapez une URL dans votre barre de navigateur et que vous cliquez sur <div class="keyboard">Entrée</div><br><br>
+     Votre navigateur va lancer une connexion TCP, qui va envoyer des requêtes GET et POST pour vous connecter au serveur web associé au nom de domaine ou à l'adresse IP.<br>
+    Si le serveur web établit la connexion TCP avec le navigateur, une réponse avec le code status et le fichier demandé (généralement le fichier index.html pour la page web) sera transmise.<br>
+    Mais dans notre cas, les données transitent en HTTP et pas en HTTPS...<br><br>
+    Ceci nous amène à la première vulnérabilité.<br>
+    Les données transitant en HTTP peuvent être interceptées, car elles transitent en clair.<br><br>
+    <div class="question"><img src="media/question-circle-regular.svg">Comment un utilisateur malveillant peut avoir accès à cette connexion TCP ?</div><br>
+
+<h3>Comprenez l’attaque de l’homme du milieu (MITM) </h3>
+Prenons un exemple.<br>
+Vous avez décidé d'aller dans votre endroit préféré pour boire un café et vous utilisez le Wi-Fi gratuit pour surfer sur certains sites.<br>
+À votre insu, un pirate a décidé d'utiliser un sniffer réseau, qui enregistre les transmissions TCP directement sur son ordinateur.<br>
+Vous surfez et vous vous connectez à un site en HTTP pour envoyer des articles de blog.<br>
+Le pirate sera en mesure d'accéder à vos informations d'identification et au contenu de votre blog, car celui-ci n'était pas chiffré !<br>
+Votre session a été détournée et l'attaquant peut ainsi voler vos données.<br>
+L'attaque de l'homme du milieu (Man in the Middle, en anglais) est l'une des principales causes de détournement de session.<br>
+L'attaquant se place au milieu de votre communication, intercepte les connexions réseau et capte ainsi tout ce que vous envoyez.<br>
+Le vol de données et le détournement de session ne sont que quelques exemples de ce qu'un attaquant peut faire une fois sur le réseau.<br>
+D'une façon ou d'une autre, si les données sont envoyées en HTTP et sont en clair, il suffit de peu d'efforts pour interpréter les données.
+
+<h3>Utilisez HTTPS</h3>
+HTTPS est la variante sécurisée de HTML qui utilise les protocoles  <strong>Secure Sockets Layer/ Transport Layer Security (SSL/TLS)</strong> pour chiffrer les transmissions.<br> 
+Cela permet d'ajouter une couche de sécurité lorsque les données sont en transit.<br>
+En règle générale, si vous devez vous authentifier avec un mot de passe n'importe où sur le site, utilisez HTTPS pour protéger le mot de passe lorsqu'il est transmis sur le réseau.<br>
+Je vous conseille de configurer l'ensemble de votre application web avec HTTPS, qu'elle traite ou non des informations sensibles.<br>
+En effet, Google marquera tous les sites HTTP comme non sécurisés pour conduire plus de sites à utiliser HTTPS.<br>
+Avoir un site configuré avec HTTPS augmentera la confiance de vos utilisateurs.<br><br>
+<div class="remarque">Pour en savoir plus, vous pouvez visiter la page de <a href="https://security.googleblog.com/2018/02/a-secure-web-is-here-to-stay.html" target='_blank'>recommandations de Google</a>.</div><br><br>
+<div class="question"><img src="media/question-circle-regular.svg">Comment utiliser le protocole TLS pour sécuriser une application ?</div><br><br>
+Tout d'abord, obtenez un <strong>certificat SSL</strong> et ajoutez-le à votre serveur.<br>
+Ce certificat est nécessaire pour chiffrer les données en cours de transmission.<br>
+Ensuite, codez vos pages avec HTTPS !<br><br>
+Si vous voulez en savoir plus sur le processus d'obtention d'un certificat SSL pour votre application web,<br>
+ vous pouvez utiliser <a href="https://www.openssl.org/" target='_blank'>OpenSSL</a> (en anglais) ou consulter ce <a href="https://www.zaproxy.org/docs/desktop/ui/dialogs/options/dynsslcert/" target='_blank'>tutoriel</a> (en anglais). 
 
 
+<h3>Mettez en place le HTTPS</h3>
+Pour créer un serveur web pour votre application web, Node.js est une plateforme populaire.<br>
+Cependant, il utilise HTTP par défaut pour la transmission de données.<br>
+Pour utiliser HTTPS, Il suffit de spécifier l'utilisation du module HTTPS sur Node.js.<br><br>
+Pour démarrer un serveur HTTP sur Node.js, le code est le suivant :<br>
+<div class="code">
+  var http = require('http');<br>
+  <br>
+  http.createServer(function (req, res) {<br>
+    <br>
+  }).listen(8080);
+</div><br><br>
+Il vous suffit d'ajouter un S et vous pouvez maintenant démarrer un serveur HTTPS tout aussi facilement (avec un certificat SSL, bien sûr).<br><br>
+<div class="code">
+  var https = require('https');<br>
+  <br>
+  https.createServer(function (req, res) {<br>
+    <br>
+  }).listen(8080);
+</div><br><br>
+<strong>ASP.NET</strong> a un module appelé <strong>SecureWebPageModule</strong>, qui peut être ajouté au web.config avec l'ajout suivant :<br>
+<div class="inner_code">< secureWebPages enabled="true"></secureWebPages></div>.<br>
+<div class="inner_code">[RequireHttps]</div>  peut également être utilisé dans le fichier <div class="inner_code">AccountController.cs</div>.<br>
+Enfin, ASP. NET prend en charge la réécriture d'URL.<br><br>
+Avec <strong>Ruby on Rails</strong>, vous pouvez exécuter un serveur web NGINX en utilisant HTTPS, et créer votre certificat :
+  <ul>
+<li>sur le fichier <strong>production.rb</strong>, changez la valeur <div class="inner_code">config.force_ssl = true</div> ;</li>
+<li>sur <strong>application.rb</strong>, écrivez la ligne  <div class="inner_code">config.force_ssl = (ENV[ENABLE_HTTPS"] == "yes")</div> ;</li>
+<li>utilisez Rack pour forcer SSL en intégrant la gem rack-ssl.</li>
+  </ul>
+Quel que soit le langage que vous utilisez, assurez-vous que votre page de connexion et toutes les pages web qui font partie de la session utilisent HTTPS.
 
+<h3>Sécurisez les requêtes GET et POST</h3>
+Lorsque vous mettez en place des connexions TCP dans vos requêtes, quelques règles de sécurité peuvent être mises en place.<br><br>
+<div class="remarque">
+  Lorsque la connexion TCP est établie entre le navigateur et le serveur web, les informations envoyées sont divisées en trois parties.<br>
+  Tout d'abord, il y aura une requête GET ou POST avec une URL spécifique.<br>
+  Ensuite, il y a un en-tête (header) et le corps de la requête (body).
+</div><br>
+Une requête GET ressemble à ceci :<br>
+<div class="code">
+  GET /index.html HTTP:1.1<br>
+  Header:<br>
+  Body:
+</div><br><br>
+Ses paramètres sont présents dans l'URL, et sont mis en cache dans le navigateur.<br>
+Il est préférable d'utiliser une requête GET lorsque vous récupérez des informations.<br>
+Cela signifie que vous pouvez interroger la base de données, mais sans modification.<br><br>
 
+Une requête POST ressemble à ceci :<br>
+<div class="code">
+  POST https://securesite.com/resetpassword.php<br>
+Header:<br>
+Body: password=password123 (encrypted)
+</div><br><br>
+Les requêtes POST sont utilisées pour apporter des modifications à la base de données et doivent donc être transmises avec un chiffrement par TLS.<br>
+Ces requêtes ne permettent pas de sauvegarder les données en cache dans le navigateur,<br>
+rendant ainsi les paramètres  contenus dans le corps de la requête facilement piratables.<br><br>
+<div class="question"><img src="media/question-circle-regular.svg">Comment être sûr que mes requêtes GET et POST ne sont pas exposées à des vulnérabilités ? </div><br><br>
+<div class="remarque">
+  Vous pouvez coder jusqu'à obtenir quelque chose de parfait, mais il est également possible d'utiliser des modules externes comme Ajax, Axios ou jQuery.
+</div><br><br>
+Ces modules externes vous permettront de vous assurer que vous utilisez HTTPS pour toutes vos requêtes GET et POST.<br><br>
 
+<h3>Tirez parti de la sécurité par défaut de votre navigateur</h3>
+Parlons maintenant de <strong>Cross-Origin Resource Sharing (CORS)</strong>.<br><br>
+Votre navigateur fournit une sécurité à vos requêtes GET et POST par défaut.<br>
+Lorsqu'une demande est faite, elle ne sera autorisée que si elle a la même origine.<br>
+Cela signifie qu'elle doit avoir les mêmes nom de domaine, port, hôtes et schémas.<br>
+Cette restriction n'est pas toujours utile si les requêtes nécessitent une transmission vers un autre port ou domaine.<br>
+Lorsque cela se produit, l'application web est exposée à une attaque CSRF.<br><br>
+<div class="remarque">
+Le cross-site request forgery (CSRF) est un type de vulnérabilité des services d'authentification web.<br>
+L’objet de cette attaque est de transmettre à un utilisateur authentifié une requête HTTP falsifiée qui pointe sur une action interne au site,<br>
+afin qu'il l'exécute sans en avoir conscience et en utilisant ses propres droits.
+</div><br><br>
+<div class="question"><img src="media/question-circle-regular.svg">Comment résoudre ce problème ?</div><br>
+CORS peut être implémenté pour éviter les attaques CSRF, en ajoutant des politiques pour limiter l'accès à une origine spécifique ou un type de requête HTTP, par exemple.<br><br>
 
+<h4>Erreurs de CORS - Node.js</h4>
+CORS signifie « <strong>Cross Origin Resource Sharing</strong> ».<br>
+Il s'agit d'un système de sécurité qui, par défaut, bloque les appels HTTP d'être effectués entre des serveurs différents, ce qui empêche donc les requêtes malveillantes d'accéder à des ressources sensibles.<br>
+Dans notre cas, nous avons deux origines :<strong><u> localhost:3000 </u></strong> et <strong><u> localhost:4200 </u></strong>, et nous souhaiterions qu'elles puissent communiquer entre elles.<br>
+Pour cela, nous devons ajouter des headers à notre objet <strong><u> response </u></strong>.<br><br>
 
+Dans le fichier <strong><u> app.js </u></strong>, ajoutez le <strong>middleware</strong> suivant avant la route d'API :<br>
+<div class="tableau_double" style="display: flex;">
+  <div class="code">
+    app.use((req, res, next) => {<br>
+      res.setHeader('Access-Control-Allow-Origin', '*');<br>
+      res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');<br>
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');<br>
+      next();<br>
+    });<br>
+  </div>
+  <ul>Ces headers permettent :
+    <li>d'accéder à notre API depuis n'importe quelle origine ( <strong><u>'*'</u></strong> ) ;</li>
+    <li>d'ajouter les headers mentionnés aux requêtes envoyées vers notre API (<strong><u> Origin </u></strong>,<strong><u> X-Requested-With </u></strong>, etc.) ;</li>
+    <li>d'envoyer des requêtes avec les méthodes mentionnées ( <strong><u> GET </u></strong>,<strong><u> POST </u></strong>, etc.).</li>
+  </ul>
+</div><br>
 
+<h3>Adoptez les bonnes pratiques</h3>
+Voici quelques recommandations pour protéger vos données en transit :
+<ol>
+<li>N'utilisez GET que pour récupérer des informations.</li>
+<li>Utilisez POST pour les informations qui seront manipulées.</li>
+<li>Toutes les requêtes POST doivent utiliser HTTPS/SSL pour s'assurer que le corps est chiffré.</li>
+<li>Vérifiez tous les modules tiers que vous utilisez pour créer des requêtes GET/POST et utilisez HTTPS pour chacun d'entre eux !</li>
+</ol>
 
-
-
-
-
-<strong></strong>
-
-
-
-
-
-
-
-
-
-
-
-
+<h3>En résumé</h3>
+<ul>
+<li>Utilisez le HTTPS pour l'ensemble de votre site, même s'il ne contient pas de données sensibles.</li>
+<li>Utilisez les requêtes GET pour récupérer les informations et POST pour modifier les informations.</li>
+<li>Sécurisez vos cookies pour qu'ils soient transmis par l'en-tête et via HTTPS.</li>
+<li>Sécurisez vos sessions en ajoutant une date d'expiration,<br> en sécurisant l'ID et en ne mettant pas cet ID dans l'URL.</li>
+<li>L'utilisation du chiffrement dans la couche Transport peut prévenir les attaques MITM !</li>
+</ul>
 
   </body>
   </html>
@@ -448,9 +752,7 @@ Elle peut être utilisée pour sécuriser vos applications web.<br><br>
       
     </strong><br/><br/>
   </div><br/>
-  <!--############# Ajout d'une video #############-->
-  
-  <video src="adresse video" controls width="800"></video><br/><br/>
+
   
   <!--#### Liste sans les points ######-->
   
@@ -479,15 +781,3 @@ Elle peut être utilisée pour sécuriser vos applications web.<br><br>
   </table>
   <!--############## Tableaux FIN ############-->
   
-  <!--############## cadre demo ############-->
-  <div class="section_double">
-        
-    <section class="section section_1">
-      <div class=number>1</div>
-    </section>
-  
-    <section class="section section_2">
-        <div class=number>2</div> 
-      </section>
-  
-    </div
