@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="stylecours.css" />
+    
+    <title>OWASP</title>
+  </head>
+
+  <body>
+
+    <div class="title">Sécurisez vos applications web avec l'OWASP</div>
+
+    <div class="content">
+      <div class="sommaire">
+        <h3 id="sommaire">- Sommaire -</h3>
+        <ul class="list_sommaire">  
+            <li><strong><a href="#identify_risk">1.1 Identifiez les risques de sécurité pour une entreprise</a></strong></li>
+            <li><strong><a href="#security_rule">1.2 Identifiez les règles de sécurité à appliquer par les entreprises</a></strong></li>
+            <li><strong><a href="#owasp">1.3 Découvrez l'Open Web Application Security Project (OWASP)</a></strong></li>
+            <li><strong><a href="#"></a></strong></li>
+            <li><strong><a href="#"></a></strong></li>
+            <li><strong><a href="#"></a></strong></li>
+            <li><strong><a href="#"></a></strong></li>
+        </ul>
+      </div>
+      <div class="sommaire">
+        <h3>- Ressource -</h3>
+        <ul class="list_sommaire">
+          <li><a href="https://haveibeenpwned.com/" target="_blank">have i been pwned?</a></li>
+          <li><a href="https://gdpr-info.eu/" target="_blank">site web officiel du RGPD  (en anglais)</a></li>
+          <li><a href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees" target="_blank">CNIL RGPD</a></li>
+          <li><a href="https://www.pcisecuritystandards.org/" target="_blank">site officiel du PCI DSS (en anglais)</a></li>
+          <li><a href="https://www.cnil.fr/" target="_blank">CNIL</a></li>
+          <li><a href="https://owasp.org/" target="_blank">L'OWASP</a></li>
+          <li><a href="https://owasp.org/www-project-top-ten/2017/" target='_blank'>OWASP Recommendation</a></li>
+          
+        </ul>
+      </div>
+    </div>
+    <h3 class="sommaire_fixed"><a href="#sommaire">Index</a></h3>
+    
+
+    <h2 id="identify_risk">1.1 Identifiez les risques de sécurité pour une entreprise</h2> 
+    <h3>Appréhendez l'importance de la sécurité</h3>
+    80 % des attaques sur les applications web sont dues à de mauvaises pratiques de développement, qui sont à l’origine des vulnérabilités découvertes et exploitées.<br>
+    <div class="remarque">
+      Le site <a href="https://haveibeenpwned.com/" target="_blank">have i been pwned?</a> répertorie les différentes fuites de données liées à des sites web largement utilisés.
+    </div><br>
+    Dans ce cours, nous parlerons des atteintes à la protection des données qui découlent d'attaques courantes.<br>
+    Ces violations sont spécifiquement liées aux applications web.
+    <h3>En resume</h3>
+    <ul>
+      <li>Les atteintes à la protection des données sur les applications web sont courantes et se produisent même dans les grandes entreprises.</li>
+      <li>Une attaque sur une application web peut faire perdre à une entreprise beaucoup d'argent et sa réputation.</li>
+      <li>Le risque est mesuré en comparant la valeur des données au coût de leur sécurisation.</li>
+    </ul>
+
+    <h5><a href="#sommaire">Sommaire</a></h5>
+  
+    <h2 id="security_rule">1.2 Identifiez les règles de sécurité à appliquer par les entreprises</h2>
+<h3>Découvrez les mesures de sécurité pour les applications web</h3>
+Il existe trois principes de sécurité qui peuvent être appliqués pour garantir la sécurité d’une application ou d’une infrastructure.
+<ol>
+  <li><strong>La confidentialité.</strong><br> C'est l'assurance que les personnes non autorisées n'accèdent pas à des informations sensibles.</li>
+  <li><strong>L'intégrité.</strong><br> Elle permet d'être sûr que les données sont fiables et n'ont pas été modifiées par des personnes non autorisées.</li>
+  <li><strong>La disponibilité.</strong><br> C'est l’assurance qu'il n'y a pas de perturbation d'un service ou de l'accessibilité aux données.</li>
+</ol>
+La sécurité de l'information repose sur l'équilibre entre ces trois principes.<br>
+Ces principes fondamentaux sont des éléments clés dans l’élaboration des politiques de sécurité en entreprise.<br>
+Mais il existe également des réglementations imposées pour certains secteurs d’activités qui influencent également les politiques de sécurité des entreprises.<br> 
+Il existe de nombreux règlements en fonction des domaines d’activité des entreprises, en voici quelques-uns qui pourront vous être utiles.
+
+<h3>Identifiez les principales réglementations de sécurité pour les applications web</h3>
+En 2018, le <strong>règlement général sur la protection des données (RGPD)</strong> est entré en vigueur.<br>
+Il modifie la manière dont les données personnelles sont stockées et utilisées et la façon dont les entreprises les traitent.<br>
+Il permet aux résidents de l'Union européenne de contrôler leurs informations personnelles, comme leur nom, leur âge, leur affiliation politique et leur orientation sexuelle, par exemple.<br>
+Les entreprises ne respectant pas le RGPD sont passibles d'une amende.<br>
+Bien qu'il soit basé sur la législation de l'Union européenne, il concerne tous les pays car les applications web sont disponibles dans le monde entier.<br>
+Les entreprises en dehors de l’UE qui font du business avec des entreprises européennes devront respecter le RGPD pour leurs applications web à destination du marché européen.<br><br>
+Un des éléments primordial et de veiller à garantir la sécurité des données personnelles stockées et échangées via l’application web.<br>
+Les données collectées doivent aussi répondre à un usage spécifique.<br><br>
+De plus, il est nécessaire d’avoir la possibilité de supprimer les données personnelles à la demande du client.<br>
+Par exemple, si un utilisateur veut se désabonner  d'une newsletter, il faut s’assurer qu'il existe une option permettant le désabonnement.<br>
+Une fois qu’une personne se désabonne, l'adresse e-mail doit être automatiquement supprimée de la base de données.<br><br>
+<div class="remarque">
+  Jetez un coup d'œil au <a href="https://gdpr-info.eu/" target="_blank">site web officiel du RGPD  (en anglais)</a> pour avoir plus d'informations sur la façon dont vous pouvez développer votre application web selon les normes du règlement.<br>
+<a href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees" target="_blank">CNIL RGPD</a>
+</div>
+<h4>Découvrez la norme PCI DSS</h4>
+La norme <strong>Payment Card Industry Data Security Standard (PCI DSS)</strong> est une norme établie pour toutes les entreprises qui traitent des données bancaires.<br>
+La sécurisation des données bancaires met l'accent sur la sécurité lors de <strong>la transmission, du traitement et du stockage des données.</strong><br><br>
+De plus en plus de plateformes web et de solutions de stockage gèrent les applications pour les entreprises, il est essentiel que le fournisseur soit également conforme à la norme PCI DSS.<br>
+Si vous créez une application web qui traite des données bancaires, comme une boutique en ligne ou un site web par abonnement, vous devez <strong>chiffrer les transmissions</strong> pour garantir la sécurité des données en transit.<br>
+Les données bancaires transmises en texte clair constituent une violation de la norme PCI DSS, ce qui peut faire l’objet d’une amende.<br><br>
+<div class="remarque">
+  Si vous souhaitez en savoir plus, voici le <a href="https://www.pcisecuritystandards.org/" target="_blank">site officiel du PCI DSS (en anglais)</a>.
+</div>
+<h4>Appréhendez la réglementation du traitement des données de santé</h4>
+Les données de santé sont des données à caractère personnel particulières car considérées comme sensibles.<br>
+Elles font à ce titre l’objet d’une protection spécifique inscrite dans de nombreux textes comme le règlement européen sur la protection des données personnelles, la loi Informatique et Libertés, le Code de la santé publique, etc.,<br>
+ afin de garantir le respect de la vie privée des personnes<br><br>
+<div class="remarque">
+  Pour en savoir plus sur le traitement des données personnelles en France, rendez-vous sur le site de la <a href="https://www.cnil.fr/" target="_blank">CNIL</a>.
+</div>
+<h4>Découvrez l'OWASP</h4>
+<strong>L’Open Web Application Security Project (OWASP)</strong> est un organisme impartial, mondial et sans but lucratif.<br>
+Il évalue les dix principaux risques pour la sécurité des applications web et préconise un développement logiciel sécurisé.<br><br>
+<div class="remarque">
+  <a href="https://owasp.org/" target="_blank">L'OWASP</a> organise des rencontres et des conférences ouvertes à tous à travers le monde.<br>
+  Il est donc possible de rencontrer et d’échanger avec la communauté pour effectuer une veille constante.
+</div><br><br>
+En tant que développeur web, il est important d'apprendre comment sécuriser votre application, afin qu'elle ne soit pas vulnérable aux attaques courantes.<br>
+ Le Top Ten de l'OWASP fournit des lignes directrices à suivre permettant de respecter des bonnes pratiques pour protéger une application web.<br>
+  Cela vous permettra de prendre en compte la sécurité dès vos premiers développements et apportera également une crédibilité supplémentaire à vos clients ou à l’entreprise pour laquelle vous travaillez.<br>
+   De plus, si vous avez besoin de développer votre application web selon les normes <strong>RGPD, PCI DSS ou autre, vous devrez d'abord la sécuriser avec l’OWASP !</strong> 
+<h3>En résumé</h3>
+<ul>
+<li><strong>La confidentialité, l'intégrité et la disponibilité</strong> sont les principes de base de la sécurité de l'information.</li>
+<li><strong>Le RGPD</strong> garantit la confidentialité des données pour les résidents de l'UE.</li>
+<li><strong>PCI DSS</strong> assure la conformité de la sécurité des sites qui traitent les données bancaires.</li>
+<li><strong>Le traitements des données de santé</strong> est réglementé par la CNIL et nécessite une prise en charge particulière. </li>
+<li><strong>L’OWASP</strong> est une organisation à but non lucratif qui propose des référentiels sur les risques de sécurité des applications web.<br>
+  Le Top Ten 2017 de l'OWASP est la dernière mise à jour sur les risques de sécurité des applications web aujourd'hui.</li>
+</ul>
+
+
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+    <h2 id="owasp">1.3 Découvrez l'Open Web Application Security Project (OWASP)</h2>
+
+    <h3>Découvrez le principe d'une attaque web</h3>
+    Les attaques web tirent parti des failles de sécurité de vos applications web.<br>
+    On parle également de vulnérabilités.<br>
+    Le Top Ten de l'OWASP est un document proposant une classification des attaques web les plus courantes ainsi que les contre-mesures associées. <br>
+    Lors du développement d’applications, les développeurs ne sont pas forcément au fait des mesures de sécurité à appliquer, et la sécurité représente souvent une contrainte budgétaire et opérationnelle.<br>
+    C'est pour cette raison qu'il est important de prendre en compte la sécurité dès les premiers développements.<br>
+    En effet, une prise en compte tardive de la sécurité pourra représenter un coût supplémentaire, sans parler du risque encouru en cas d’attaque.<br><br>
+<h3>Découvrez l’OWASP</h3>
+<strong>L'Open Web Application Security Project (OWASP)</strong> est une organisation à but non lucratif fondée en 2004 pour prévenir de manière proactive les attaques sur les applications web.<br>
+Il s'agit du premier effort de normalisation des pratiques de développement sécurisé.<br>
+En 2001, l'OWASP n'était pas une organisation officielle, mais plutôt un collectif qui préconisait des pratiques de développement sécurisé.<br>
+Ce collectif a pris de l'ampleur et est devenu l’OWASP foundation en 2004, avec une norme éthique pour maintenir une neutralité et l'absence de pressions commerciales.<br>
+L'OWASP n'est réglementée par aucune entreprise.<br>
+Elle propose un référentiel neutre permettant d’accompagner les entreprises dans le processus de sécurisation ou d’audit de sécurité.
+
+<h3>Découvrez comment le Top Ten de l'OWASP est utilisé par les entreprises</h3>
+Avec l'évolution d'Internet, les plus grandes entreprises ont une présence significative en ligne, ce qui les oblige à fournir et à maintenir des applications web.<br>
+La plupart des processus internes utilisent également des applications web.<br>
+Toute application qui traite des données sensibles peut être attaquée et nécessite donc une sécurité standardisée.<br>
+Les entreprises qui ne traitent pas de données sensibles, mais qui ont besoin d'une plateforme web pour leur business, sont également exposées aux attaques web.<br>
+Par exemple, une entreprise qui fournit des informations, comme un site d'actualité, peut ne pas avoir besoin des données personnelles de ses clients mais nécessite que le site web soit disponible pour permettre la continuité de service.<br>
+Si une attaque faisait s'effondrer le site, cela aurait une incidence sur les revenus de l'entreprise.<br>
+Le Top Ten de l'OWASP fournit une base de référence avec une liste de contrôles à effectuer pour atténuer les risques les plus courants en matière de sécurité.<br>
+Cette base de référence est également utilisée pour répondre à des normes réglementaires plus strictes, telles que le RGPD par exemple.<br><br>
+<div class="remarque">
+  Pour plus d'informations, reportez-vous sur la page web de l’<a href="https://owasp.org/www-project-top-ten/2017/" target='_blank'>OWASP</a> (en anglais).
+</div><br><br>
+<h3>Appréhendez l'OWASP Top Ten</h3>
+Dans le Top Ten de l’OWASP, les attaques sont classées par ordre d’importance.<br>
+Les vulnérabilités présentes dans le Top Ten existent dans les applications web de tous les langages et frameworks.<br>
+Il n'existe pas de langage de programmation exempt de vulnérabilités.<br>
+Voici les 10 attaques les plus fréquentes contre les applications web, selon le Top Ten de l’OWASP en 2017.
+<ol>
+<li><strong>Injection</strong><br>
+  Une attaque par injection est une attaque permettant l’injection de code arbitraire dans l’application.<br>
+  Cela se produit lorsque des données non maîtrisées sont exécutées par le moteur présent sur le backend de l’application.<br>
+  Les données de l’attaquant sont exécutées sans autorisations adéquates.<br>
+  L’injection de code non autorisée peut permettre à un attaquant d’accéder à des données auxquelles il n’a normalement pas accès.</li>
+<li><strong>Piratage de session</strong><br>
+  Beaucoup d'applications exigent qu'un utilisateur se connecte pour arriver sur des pages auxquelles lui seul a accès.<br>
+  L’application est vulnérable à une attaque si un utilisateur malveillant peut obtenir un accès non autorisé aux mots de passe, clés et jetons pour pirater la session d'un autre utilisateur.</li>
+<li><strong>Exposition de données sensibles</strong><br>
+  Les données stockées ou échangées via une application doivent être protégées pour éviter l’interception par une personne malveillante.<br>
+  Les bases de données qui enregistrent les données personnelles, les données de cartes de crédit, les noms d'utilisateur et les mots de passe représentent une cible de choix pour un pirate.<br>
+  Si ces données ne sont pas chiffrées, elles ne sont pas sécurisées et peuvent être récupérées lorsqu’elles sont en transit par exemple.<br>
+  L'utilisation de techniques de chiffrement et de pratiques de sécurité peut atténuer ce type d’attaques.
+</li>
+<li><strong>Entités externes XML (XXE)</strong><br>
+  Le format XML permet de faciliter l’échange de données sous forme d'arborescence.<br>
+  Il est largement utilisé sur Internet.<br>
+  Il peut être exploité via l’injection XXE ou XML External Entity.<br>
+  XML External Entity est une attaque contre les applications qui parsent des entrées XML (exemple flux RSS).<br>
+  Cette attaque a lieu lorsque l'analyseur XML est mal configuré et contient une référence à une entité externe.
+</li>
+<li><strong>Contournement du contrôle d’accès.</strong><br>
+  Cette attaque vise les fonctionnalités des applications web qui nécessitent un contrôle d'accès.<br>
+  Dans ce cas, les pirates peuvent utiliser l'URL pour contourner l'authentification, par exemple.<br>
+  Ce type d’exploitation peut par exemple révéler comment une base de données est organisée.
+</li>
+<li><strong>Security Misconfiguration</strong><br>
+  Une mauvaise configuration de sécurité est le plus souvent observée dans les en-têtes HTTP qui permettent de donner des indications sur la configuration du serveur, ou via la gestion des exceptions par défaut.<br>
+  Les codes d'erreur et les exceptions courantes peuvent donner à un attaquant un aperçu de l'application.
+</li>
+<li><strong>Cross-Site Scripting  (XSS)</strong><br>
+  Les failles XSS se produisent chaque fois qu'une application inclut des données non fiables dans une nouvelle page web sans validation ou échappement.<br>
+  Les failles XSS permettent aux attaquants d'exécuter des scripts dans le navigateur de la victime,<br>
+  ce qui peut détourner des sessions utilisateur, altérer des sites web ou rediriger l'utilisateur vers un site malveillant.
+</li>
+<li><strong>Désérialisation non sécurisée (Insecure Deserialisation)</strong><br>
+  Une vulnérabilité de type “insecure deserialisation” permet à un utilisateur malveillant d'accéder et de modifier les fonctionnalités de l’application ciblée.
+</li>
+<li><strong>Utilisation de composants présentant des vulnérabilités connues</strong><br>
+  Même si votre application est sécurisée, vous devez vous assurer que le framework, les bibliothèques, les appels API et la plateforme que vous utilisez ne sont pas vulnérables.<br>
+  Lorsqu'une nouvelle vulnérabilité est découverte, un correctif est généralement proposé.<br>
+  Il faudra alors l’appliquer pour garantir la sécurité de l’application.
+</li>
+<li><strong>Manque de surveillance et de monitoring</strong><br>
+  Pour garantir la sécurité d’une application, il est nécessaire de surveiller et de monitorer les connexions.<br>
+  De nombreux serveurs vulnérables servent de rebond aux attaquants.<br>
+  La mise en place de monitoring permettra de détecter une anomalie sur le serveur.
+</li>
+</ol><br><br>
+<div class="remarque">
+Mais, est-il possible de sécuriser le code de toutes les attaques présentes dans le Top Ten de l'OWASP ?
+</div><br>
+Si vous utilisez les bonnes pratiques de sécurité et que vous êtes conscient des risques, vous avez une longueur d'avance !<br>
+Rappelez-vous que 80 % des applications présentent des vulnérabilités communes telles que décrites dans l'OWASP.<br>
+Apprendre à les connaître et utiliser des techniques simples de développement sécurisé dont nous parlerons dans ce cours vous aidera à créer un code de qualité !
+
+<h3>En résumé</h3>
+Comme vous avez pu le voir, il y a dix types d'attaques qui sont spécifiés dans OWASP :
+<ol>
+<li>l'injection ;</li>
+<li>le piratage de session ;</li>
+<li>l'exposition de données sensibles ;</li>
+<li>les entités externes XML (XXE) ;</li>
+<li>le contournement des contrôles d'accès ;</li>
+<li>security misconfiguration ou mauvaise configuration de sécurité ;</li>
+<li>Cross-Site Scripting (XSS) ou failles XSS ;</li>
+<li>la désérialisation non sécurisée ;</li>
+<li>l'utilisation de composants présentant des vulnérabilités connues ;</li>
+<li>le manque de surveillance et de monitoring.</li>
+<li></li>
+</ol>
+Assurez-vous de bien comprendre la différence entre ces dix types d'attaques et la façon dont elles peuvent être liées à votre application web.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </body>
+  </html>
+
+
+  <strong><u></u></strong> 
+  <h5><a href="#sommaire">Sommaire</a></h5>
+  
+    <h2 id="1">- 1 -</h2> 
+  
+    <a href="" target='_blank'></a>
+  <!--question################-->
+  
+  <div class="question"><img src="media/question-circle-regular.svg"></div><br>
+     
+    <!---insertion d'une figure avec commentaire-->
+    <figure>
+      <img src="image/" alt="">
+      <figcaption></figcaption>
+    </figure>
+    <span style="color:rgb(140, 140, 140);"></span>
+    <span style="color:red;"></span> <!--Ligne à souligner dans le code################-->
+    <span class="keyboard"></span>
+      <!--########### Commandes importantes border noire ########-->
+      <strong  style="border: 2px solid black;display:inline-block;padding: 5px;"></strong><br/><br/>
+  <!--########### Tableaux double  ##########-->
+  <div class="tableau_double" style="display: flex;">
+    <strong  style="border: 2px solid black; display:inline-block; padding: 5px;">
+      <span style="color:red;border: 1px solid red;padding:2px;">Titre1</span><br/>
+      
+    </strong><br/><br/>
+    
+    <strong  style="border: 2px solid black; display:inline-block; padding: 5px;">
+      <span style="color:red;border: 1px solid red;padding:2px;">Titre2</span><br/>
+      
+      
+    </strong><br/><br/>
+  </div><br/>
+  <!--############# Ajout d'une video #############-->
+  
+  <video src="adresse video" controls width="800"></video><br/><br/>
+  
+  <!--#### Liste sans les points ######-->
+  
+  <ul style=" list-style-type: none;">
+  
+  
+  <!--############## Tableaux ############-->
+  <table>
+    <caption>Entête du tableau</caption>
+  
+    <tr>
+        <th>Titre 1</th>
+        <th>Titre 2</th>
+        <th>Titre 3</th>
+    </tr>
+    <tr>
+        <td>Donnée 1</td>
+        <td>Donnée 2</td>
+        <td>Donnée 3</td>
+    </tr>
+    <tr>
+        <td>Donnée 1</td>
+        <td>Donnée 2</td>
+        <td>Donnée 2</td>
+    </tr>
+  </table>
+  <!--############## Tableaux FIN ############-->
+  
+  <!--############## cadre demo ############-->
+  <div class="section_double">
+        
+    <section class="section section_1">
+      <div class=number>1</div>
+    </section>
+  
+    <section class="section section_2">
+        <div class=number>2</div> 
+      </section>
+  
+    </div
