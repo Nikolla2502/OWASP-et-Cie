@@ -21,7 +21,9 @@
             <li><strong><a href="#injection">2.1 Protégez votre code contre l’injection</a></strong></li>
             <li><strong><a href="#session">2.2 Empêchez le piratage de session</a></strong></li>
             <li><strong><a href="#transit_data">2.3 Protégez les données en transit</a></strong></li>
-            <li><strong><a href="#"></a></strong></li>
+            <li><strong><a href="#data_storage">2.4 Protégez les données stockées sur une application</a></strong></li>
+            <li><strong><a href="#acces">2.5 Empêchez l'exploitation des contrôles d'accès</a></strong></li>
+            <li><strong><a href="#xss">2.6 Stoppez le cross-site scripting (XSS)</a></strong></li>
         </ul>
       </div>
       <div class="sommaire">
@@ -37,7 +39,9 @@
           <li><a href="https://security.googleblog.com/2018/02/a-secure-web-is-here-to-stay.html" target='_blank'>HTTPS recommandations de Google</a></li>
           <li><a href="https://www.openssl.org/" target='_blank'>OpenSSL</a></li>
           <li><a href="https://www.zaproxy.org/docs/desktop/ui/dialogs/options/dynsslcert/" target='_blank'>SSL tutoriel</a></li>
-          
+          <li><a href="https://argon2.online/" target='_blank'>Argon2 - Crypter donnees</a></li>
+          <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authorization_Cheat_Sheet.md" target='_blank'>OWASP - Controle acces</a></li>
+          <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html" target='_blank'>OWASP XSS</a></li>
         </ul>
       </div>
     </div>
@@ -195,6 +199,7 @@ Voici les 10 attaques les plus fréquentes contre les applications web, selon le
   Dans ce cas, les pirates peuvent utiliser l'URL pour contourner l'authentification, par exemple.<br>
   Ce type d’exploitation peut par exemple révéler comment une base de données est organisée.
 </li>
+<strong><a href="#acces">2.5 Empêchez l'exploitation des contrôles d'accès</a></strong>
 <li><strong>Security Misconfiguration</strong><br>
   Une mauvaise configuration de sécurité est le plus souvent observée dans les en-têtes HTTP qui permettent de donner des indications sur la configuration du serveur, ou via la gestion des exceptions par défaut.<br>
   Les codes d'erreur et les exceptions courantes peuvent donner à un attaquant un aperçu de l'application.
@@ -204,6 +209,7 @@ Voici les 10 attaques les plus fréquentes contre les applications web, selon le
   Les failles XSS permettent aux attaquants d'exécuter des scripts dans le navigateur de la victime,<br>
   ce qui peut détourner des sessions utilisateur, altérer des sites web ou rediriger l'utilisateur vers un site malveillant.
 </li>
+<strong><a href="#xss">2.6 Stoppez le cross-site scripting (XSS)</a></strong>
 <li><strong>Désérialisation non sécurisée (Insecure Deserialisation)</strong><br>
   Une vulnérabilité de type “insecure deserialisation” permet à un utilisateur malveillant d'accéder et de modifier les fonctionnalités de l’application ciblée.
 </li>
@@ -715,8 +721,324 @@ Voici quelques recommandations pour protéger vos données en transit :
 <li>L'utilisation du chiffrement dans la couche Transport peut prévenir les attaques MITM !</li>
 </ul>
 
+
+  <h5><a href="#sommaire">Sommaire</a></h5>
+    
+  <h2 id="data_storage">2.4 Protégez les données stockées sur une application</h2> 
+Dans le chapitre précédent, nous avons parlé de la sécurisation des données lors de leur transmission.<br>
+Mais où sont stockées les données et comment les protéger ?<br>
+Lorsque vous visitez un site web et que vous entrez des données dans un formulaire, comme un nom d’utilisateur et un mot de passe,<br>
+ces données sont ensuite envoyées et une requête sur la base de données est effectuée, pour vérifier que l’utilisateur existe et que le mot de passe entré est le bon.<br>
+S’ils correspondent, le serveur vous donne accès à vos données stockées sur la base de données.<br>
+Les données stockées sont donc le contenu de la base de données.<br>
+Typiquement, une base de données contiendra des données sensibles sur un site qui nécessite une authentification.<br>
+Nous savons comment effectuer des requêtes dans la base de données afin de prévenir les modifications non autorisées et l'exposition de la base de données.<br>
+Mais si un attaquant arrive à contourner l’authentification, comment pouvons-nous restreindre son accès aux données ?<br>
+Pour cela, il existe un moyen sûr, <strong>le chiffrement des données</strong>.
+
+<h3>Découvrez les algorithmes de hachage</h3>
+Pour protéger certaines données stockées sur une application, il est possible d’utiliser des algorithmes de hachage.<br>
+L'intérêt des algorithmes de hachage est qu’ils permettent de calculer une empreinte (ou hash) d’une chaîne de caractères, par exemple.<br>
+Cette empreinte est utile pour éviter de stocker en clair le mot de passe dans la base de données.<br><br>
+Prenons un exemple.<br>
+Nous avons une chaîne de caractères <div class="inner_code">password123</div>.<br>
+Nous allons utiliser un algorithme de hachage pour obtenir une empreinte.<br>
+Dans notre exemple, nous allons utiliser les algorithmes de hachage SHA1 et MD5.<br>
+Nous obtenons l'empreinte suivante :<br>
+<div class="code">
+  sha1:bab1298d948ebb34bd0f3faf5e596ebc0b27c615<br>
+  md5:7576f3a00f6de47b0c72c5baf2d505b0
+</div><br><br>
+<div class="remarque">
+  <strong>SHA-1</strong> (Secure Hash Algorithm) et <strong>MD5</strong> (message-digest algorithm) sont des fonctions de hachage cryptographique. 
+</div><br><br>
+La chaîne de caractères <div class="inner_code">password123</div> est désormais stockée sous la forme d'un hash MD5, rendant sa lecture impossible pour un utilisateur malveillant.<br><br>
+Cependant, certains attaquants réussiront tout de même à contourner ce mécanisme.<br>
+Comme pour les cookies, il est possible d’effectuer une attaque par rainbow table,<br>
+c’est-à-dire qu’un attaquant va préalablement calculer des hash de mots de passe puis les utiliser avec une attaque de brute force pour trouver le bon.<br><br>
+Comme pour l'authentification, il est possible de contourner cette attaque en utilisant le salage.<br><br>
+Sachez qu'il existe de nombreux algorithmes de hachage : Bcrypt, Scrypt, SHA, MD5, Argon2 et PBKDF2, par exemple.<br>
+Contrairement aux algorithmes SHA et MD5, Argon2, PBKDF2, Bcrypt et Scrypt sont plus axés sur la sécurité que sur l'efficacité.<br>
+Cela signifie que le cassage de ces algorithmes exige plus de ressources.<br>
+Argon2 est un des algorithmes de hachage les plus puissants et fortement recommandés par l'OWASP. 
+<a href="https://argon2.online/" target='_blank'>Argon2</a>
+
+
+<h3>Sécurisez une base de données</h3>
+<h4>Gérez l'authentification</h4>
+Pour sécuriser l’authentification, il existe de bonnes pratiques de sécurité simples à appliquer :
+<ul>
+<li>supprimer les comptes par défaut en changeant les mots de passe connus ;</li>
+<li>utiliser le principe de moindre privilège pour vous assurer qu'un ou deux comptes seulement ont des privilèges élevés.</li>
+</ul><br><br>
+<div class="remarque">
+  <strong>Le principe de moindre privilège</strong> est un autre concept fondamental de la sécurité des systèmes d’information.<br>
+  Avec le moins de privilèges possible, vous vous assurez que tous les membres de l'organisation n'ont que les droits dont ils ont besoin sur le réseau pour exercer leur fonction spécifique définie, ni plus ni moins. 
+</div><br><br>
+
+
+<h4>Cachez des données sensibles dans une base de données</h4>
+Il existe plusieurs techniques qui permettent de cacher les données sensibles d’une base de données et donc de sécuriser une application.
+<ul>
+<li><strong>L'anonymisation</strong><br>
+  est une technique recommandée par l’OWASP pour cacher des données privées en chiffrant, brouillant et supprimant des parties des données.<br>
+  Par exemple, si une demande est faite pour la date de naissance d'une personne pour s’authentifier, seule l'année sera fournie par la base de données.</li>
+<li><strong>La pseudonymisation</strong><br>
+  est une technique recommandée par le RGPD.<br>
+  Elle remplace les données personnelles par des identifiants et des pseudonymes artificiels pour cacher les données sensibles.</li>
+<li><strong>La minimisation des données</strong><br>
+  permet de se conformer à l'ensemble de règles du RGPD.<br>
+  L'entreprise doit uniquement demander, enregistrer et traiter les données personnelles requises.<br>
+  En d'autres termes, toute donnée personnelle demandée doit avoir un motif commercial solide.</li>
+
+  Il existe deux façons d'appliquer ces techniques à votre base de données.
+
+<li><strong>Le masquage dynamique des données</strong><br>
+  permet de se conformer à l'ensemble de règles du RGPD.<br>
+  est un moyen d'appliquer des règles d'anonymisation sur les colonnes de données sensibles.<br>
+  Lorsqu'une demande est faite pour récupérer les données des colonnes masquées, elle n'apparaîtra pas dans sa forme complète.<br>
+  Ces données peuvent également être cachées aux administrateurs de bases de données avec des rôles qui bloquent l'accès aux données sensibles.
+</li>
+Sur <strong>SQL Server</strong>, l'option <div class="inner_code">masked with</div> applique différentes fonctions de masquage.<br>
+L’option par défaut prend la valeur sensible et la remplace par une autre valeur lorsqu'elle est affichée.<br>
+L'exemple ci-dessous montre son application sur une colonne Date de naissance.<br>
+<div class="code">
+  Birthdate DATE<br>
+  MASKED WITH (FUNCTION = 'default()') NOT NULL,
+</div><br><br>
+<strong>MongoDB</strong> a la possibilité d'utiliser un module appelé <strong>Mongo Mask</strong>.<br>
+Il peut être utilisé comme ceci sur l’application :<br>
+<div class="code">var mongoMask = require('mongo-mask')</div><br>
+Sur la base de données, MongoDB a des accès en lecture seule qui peuvent être spécifiés dans le code. 
+
+<li><strong>Cloner et générer des masques de données</strong><br>
+  utilisant plusieurs bases de données.<br>
+  En utilisant le même schéma, une base de données supplémentaire utilisée pour récupérer des informations<br>
+  peut contenir des données masquées pour les colonnes sensibles déjà présentes.
+</li>
+
+</ul>
+<strong>SQL Server</strong>, <strong>SQL Clone</strong> et <strong>SQL Data Generator</strong> peuvent être utilisés pour créer une autre base de données avec des données générées pour masquer les données sensibles lors de leur récupération.<br>
+Contrairement au masquage dynamique des données, il ne s'agit pas d'un masquage actif.<br>
+Il s'agit d'une redirection de requête vers une autre base de données avec des données générées pour remplacer les données sensibles.
+
+<h3>En résumé</h3>
+<ul>
+<li>Sécurisez votre base de données avec le chiffrement.</li>
+<li>Utilisez des algorithmes de hachage sécurisés tels que Argon2, Scrypt, Bcrypt et PBKDF2.</li>
+<li>Utilisez pas les algorithmes de hachage SHA et MD5 avec salage.</li>
+<li>Les tables Rainbow automatisent les connexions avec des mots de passe préhashés !</li>
+<li>Le masquage des données peut être utilisé pour sécuriser les données sensibles d’une base de données.</li>
+</ul>
+
+
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+<h2 id="acces">2.5 Empêchez l'exploitation des contrôles d'accès</h2> 
+
+<h3>Comprenez le principe du contrôle d'accès</h3>
+Imaginez une application web avec quatre niveaux d’accès pour quatre groupes de personnes.<br>
+Le premier groupe aura un accès limité,<br>
+le deuxième groupe aura un accès un peu plus privilégié,<br>
+le troisième groupe aura encore plus d’accès.<br>
+Enfin, le quatrième groupe aura les accès administrateur ou root.<br><br>
+Ces niveaux d’accès sont appelés rôles.<br><br>
+<div class="remarque">
+  Pour en savoir plus, vous pouvez visiter cet aide-mémoire de l’<a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authorization_Cheat_Sheet.md" target='_blank'>OWASP - Authorization Cheat Sheet</a>.
+</div><br><br>
+Imaginons les quatre rôles suivant.
+<table>
+  <tr>
+      <th>Rôle</th>
+      <th>Niveau<br> d'accès</th>
+  </tr>
+  <tr>
+      <td>guppy</td>
+      <td>1</td>
+  </tr>
+  <tr>
+      <td>poisson</td>
+      <td>2</td>
+  </tr>
+  <tr>
+      <td>dauphin</td>
+      <td>3</td>
+  </tr>
+  <tr>
+      <td>baleine</td>
+      <td>4</td>
+  </tr>
+</table>
+Dans cet exemple, vous devrez créer un accès pour chaque rôle.<br>
+Assurez-vous que les rôles guppy, poisson et dauphin ont des accès limités.<br>
+Le rôle baleine, lui, peut accéder à tout ce que les autres peuvent faire : c’est l’administrateur. <br><br>
+Le <strong>contrôle d'accès</strong> consiste à configurer votre application web pour s'assurer que les utilisateurs ne peuvent accéder qu'aux données permises par leur rôle.<br><br>
+L'authentification valide une identité, comme un nom d'utilisateur et un mot de passe.<br>
+Une fois authentifié, vous pourrez accéder à certaines pages.<br>
+Si les contrôles d’accès ne sont pas verrouillés, vous pourrez accéder à des pages et à des fonctionnalités auxquelles vous n'êtes normalement pas autorisé à accéder, parfois sans le savoir.
+
+<h3>Découvrez les attaques contre le contrôle d'accès</h3>
+<h4>Appréhendez la restriction URL</h4>
+Les attaques courantes contre le contrôle d'accès se produisent lorsqu'une URL permet de contourner l'authentification.<br>
+Les pirates informatiques utilisent la connaissance des formats et des modèles pour deviner l'URL des pages privilégiées qui n'ont pas été configurées de manière sécurisée.<br>
+Pour se protéger contre ce type d'attaque, il est possible de mettre en place une restriction URL.<br><br>
+Prenons le cas d’une attaque utilisant les rôles que nous avons définis précédemment<br>
+Un utilisateur du groupe guppy se connecte, et le lien de la page principale ressemble à ceci :<br>
+<div class="code">
+  https://webdevfightshacker.bla/guppy_login.html
+</div><br><br>
+Vous remarquerez qu’il y a une structure définie.<br>
+La page de login  <div class="inner_code">guppy_login.html</div>  est définie comme page principale.<br><br>
+Un attaquant pourra par exemple être en mesure de deviner la page d’authentification d’un autre rôle en devinant les pages des autres groupes (poisson_login.html, par exemple).<br>
+<div class="code">
+  https://webdevfightshacker.bla/whale_login.html
+</div>
+<h4>Comprenez les références directes d'objets non sécurisées (IDOR)</h4>
+Un utilisateur malveillant dispose de techniques pour accéder à une grande partie du code d'une application web.<br>
+Une partie de ce code peut révéler comment une base de données est organisée.<br>
+Le fait de fournir quelques informations sur la structure de l’application web peut permettre à un utilisateur non autorisé d’effectuer des actions malveillantes et de contourner les accès prédéfinis. <br>
+Par exemple, si vous accédez à votre compte sur un site et que vous êtes sur la page principale,<br>
+ vous remarquez que l'adresse URL ressemble à ceci :<br><br>
+ <div class="code">https://webdevfightshacker.bla/index.php/view?account=3453</div><br>
+ Ici le numéro <strong>3453</strong> correspond a un nombre dans la base de données.<br>
+ Une personne malveillante pourrait ici modifier ce nombre pour accéder à un compte en particulier.<br><br>
+<div class="code">https://webdevfightshacker.bla/index.php/view?account=1</div><br><br>
+Dans l'exemple ci-dessus, chaque compte est considéré comme un objet.<br>
+Lorsque vous faites une référence directe à cet objet dans l'URL en ajoutant account=1, vous donnez à l’attaquant un indice sur la façon dont votre application web et votre base de données sont configurées.<br>
+Il pourra ainsi exploiter ces faiblesses pour accéder à certaines parties non autorisées de l'application.
+
+<h4>Découvrez l'attaque null byte (octet nul)</h4>
+Une attaque d'octet nul tire parti des références de l'objet.<br>
+Les noms de page par défaut peuvent être basés sur la configuration du modèle, de la vue et du contrôleur (MVC) que beaucoup d'applications web utilisent.<br>
+Cela permet à un attaquant d'utiliser ces connaissances pour extraire une partie du code source de votre page !<br>
+Regardons un site web avec un lien de menu intitulé  <div class="inner_code">About_us.htm</div>.<br>
+Ceci montre que toutes les pages se terminent par  <div class="inner_code">.htm</div>  ou similaire.<br>
+<div class="code">
+  webdevfightshacker.bla/fight/default.aspx?content=about_us.htm
+</div><br><br>
+L’attaquant sait aussi que le fichier <div class="inner_code">default.aspx.cs</div >est la page principale, et veut y jeter un coup d’œil pour plus d'informations.<br>
+<strong>Un octet nul (./)</strong> fait croire au navigateur que l'URL est complète.<br>
+La chaîne de caractères qui suit l'octet nul peut donner à l’attaquant l'occasion de montrer le contenu de n'importe quel fichier.<br><br>
+<div class="code">
+  webdevfightshacker.bla/fight/default.aspx?content=%20./default.aspx.cs%00.htm
+</div><br><br>
+Cet exemple montre la page <div class="inner_code">default.asps.cs.</div>.<br>
+Il sera ici possible d'accéder à n'importe quelle page et donc de contourner les contrôles d'accès mis en place.<br><br>
+<div class="remarque">
+  Les références directes d'objet peuvent également apparaître dans un code d'erreur.<br>
+  L’attaquant peut commencer à manipuler les entrées pour voir quels types d'exceptions et d'erreurs apparaissent et ce qu'elles disent.
+</div><br><br>
+
+<h4>Sécurisez les contrôles d’accès</h4>
+<ol>
+<li>Au lieu de nommer vos pages cibles avec un sens,<br> utilisez un tableau de valeurs clés qui font référence à vos objets.</li>
+<li>Modifiez les noms par défaut de vos pages web.</li>
+<li>Assurez-vous que toutes les pages ont un contrôle d'authentification.</li>
+<li>Personnalisez vos exceptions et vos codes d'erreur.</li>
+</ol>
+
+<h3>En résumé</h3>
+<ul>
+<li>Les applications web avec authentification ne garantissent pas que toutes les pages sont verrouillées par contrôle d’accès.</li>
+<li>Les références directes aux objets peuvent amener un attaquant à comprendre les modèles et la configuration des applications web.</li>
+<li>N'utilisez pas de noms prévisibles ou de références directes à la base de données dans l'URL.</li>
+<li>Prévenez les attaques d'octets nuls en protégeant votre code source.</li>
+<li>Utilisez des références d'objet indirectes avec des paramètres et des combinaisons clé-valeur.</li>
+<li>Personnalisez vos codes d'erreur pour qu'ils ne révèlent pas les attributs de la base de données.</li>
+</ul>
+
+
+
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+<h2 id="xss">2.6 Stoppez le cross-site scripting (XSS)</h2> 
+
+<h3>Définissez le cross-site scripting</h3>
+Les attaques cross-site scripting ou XSS sont faites pour prendre le contrôle de votre navigateur.<br>
+Un attaquant qui y parvient aura potentiellement accès à vos cookies et à vos sessions qui peuvent contenir des données sensibles !<br>
+Ces attaques peuvent également permettre d’apporter des modifications non autorisées à une application web et créer des liens qui vous mèneront vers des sites malveillants !
+<h4>Découvrez les attaques utilisant XSS</h4>
+Avec une attaque XSS, un attaquant va essayer de prendre le contrôle de votre navigateur en injectant un script JavaScript dans l'application web.<br>
+Il pourra l’injecter directement dans un formulaire, mais il peut également l’injecter dans l'URL, l'en-tête HTTP ou d'autres parties du framework utilisé.<br>
+Contrairement aux injections SQL, il ne s'agit pas de requêtes et de commandes SQL sur une base de données.<br>
+Une faille XSS s’exécute dans le code de l'application web.<br><br>
+Revenons à la page de connexion avec le nom d'utilisateur et le mot de passe.<br> 
+Au lieu du nom d'utilisateur, le pirate va entrer :<br>
+<div class="inner_code"><<span style="color:rgb(206, 201, 201);">.</span>script> I haxx000red you <<span style="color:rgb(206, 201, 201);">.</span>/script></div>
+Sur une page de connexion qui n'est pas sécurisée, il y aura une boîte de dialogue qui s’affichera.<br>
+De plus, l'URL qui se trouve maintenant dans votre barre d'adresse peut être utilisée pour exécuter directement ce script.<br>
+Il est également possible d'effectuer la même attaque avec une image, par exemple.<br><br>
+<div class="code">
+  <<span style="color:rgb(0,0, 0);">.</span>img src oneerror= “alert(haaxxxx000red 4ever!)”<span style="color:rgb(0, 0, 0);">.</span>>
+</div><br><br>
+L'URL dans la barre d'adresse après l'exécution du script pourrait ressembler à ceci :<br>
+<div class="inner_code">webdevfightshacker.bla/index.html?query=<<span style="color:rgb(206, 201, 201);">.</span>img src + onerror%3Dalert%45%haaxxxx%87”....></div><br><br>
+Notez que le domaine sur l'URL a l'air légitime, mais à la fin de l'URL, on peut voir le script qui a été ajouté.<br>
+Ce lien peut exécuter du code arbitraire sur le navigateur.<br>
+Un attaquant pourra transmettre cette URL à une cible qui exécutera l'attaque XSS dans son environnement.<br><br>
+<div class="remarque">
+  Pour en savoir plus sur les attaques XSS, consultez l'aide-mémoire de l'<a href="https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html" target='_blank'>OWASP</a> (en anglais).
+</div><br><br>
+Les attaques XSS ciblent également les cookies, exposant leur contenu dans une fenêtre pop-up.<br>
+Par exemple, si vous avez envoyé une demande de connexion à un serveur web et qu'il répond par un cookie avec vos identifiants en texte clair,<br>
+un script XSS s'exécutera sur votre navigateur et affichera une fenêtre pop-up avec vos identifiants qui étaient sur le cookie.<br><br>
+<div class="border_red">
+Une option consiste à ajouter un flag  <strong>HttpOnly</strong> à vos cookies.<br>
+Ce flag permet d’empêcher un script d'accéder aux cookies.<br>
+<strong>HttpOnly</strong>  est un flag à mettre à  <div class="inner_code">true</div>  dans la plupart des frameworks.<br>
+Par exemple, <strong>Node.js</strong> a un module de cookies avec HttpOnly, et un middleware appelé <strong>Helmet</strong>.
+</div><br><br>
+<strong></strong>Express PHP a une fonction <div class="inner_code">setcookie()</div>  qui permet de configurer <strong>HttpOnly</strong>  comme paramètre,<br>
+   et <strong>ASP.NET</strong> a l'option <div class="inner_code">CookieHTTpOnly</div> et <div class="inner_code">CookieSecure</div><br><br>
+<div class="important">
+Attention cependant, l’option <strong>HttpOnly</strong> peut ne pas fonctionner sur les navigateurs obsolètes.<br>
+Les attaques XSS sont passées de la troisième à la septième place du Top Ten de l'OWASP parce que les navigateurs ont renforcé leur sécurité, rendant ces attaques plus difficiles.
+</div>
+
+<h4>Respectez les bonnes pratiques</h4>
+<ul>
+<li><strong>Appliquez la validation des données d'entrée</strong> :<br>
+   pour empêcher les attaques communes, il est possible de blacklister certains caractères comme les balises script.</li>
+<li><strong>Appliquez la transformation des entrées</strong> :<br>
+   vous pouvez encoder toutes vos entrées dans une entité de caractères HTML ou du texte pour qu'il n'exécute aucun script.<br>
+    Il existe des fonctions simples et des bibliothèques qui peuvent vous aider à encoder tout votre HTML et JavaScript.</li>
+<li>Configurez vos cookies avec le flag <strong>HttpOnly</strong></li>
+</ul>
+
+<h3>Découvrez les vulnérabilités CSRF (Cross-Site Request Forgery) </h3>
+Un pirate peut créer un lien XSS et le distribuer par le biais de l'ingénierie sociale pour accéder au navigateur d'un utilisateur.<br>
+L’ingénierie sociale est un type d’attaque ne reposant pas sur une faille technique.<br>
+Si l'utilisateur clique sur le lien alors qu'une session est encore ouverte sur sa banque,<br>
+le pirate peut détourner un jeton de session dans le navigateur (en temps réel) pour accéder à cette session.<br><br>
+Ces requêtes peuvent également rester inactives jusqu'à ce que l'utilisateur ait créé une session sur son navigateur.<br>
+Regardons l’exemple ci-dessous :<br>
+<div class="code">GET http://bank.com/transfer.do?acct=BOB&amount=100 HTTP/1.1</div><br><br>
+Dans notre exemple, ce lien XSS est un formulaire de demande GET, mais il pourrait aussi bien s'agir d'un formulaire de demande POST.<br>
+Ce lien effectue une transaction bancaire.<br>
+Cette transaction bancaire se produit à l'insu de l'utilisateur qui peut ou non réaliser que le navigateur a toujours la session bancaire ouverte.<br><br>
+<h4>Protégez votre application contre une faille CSRF</h4>
+<ol>
+<li>Exiger la réauthentification pour toutes les demandes des utilisateurs.</li>
+<li>Utiliser un jeton unique pour chaque demande.</li>
+<li>Utiliser des jetons anti-falsification qui valident le jeton côté client par rapport au jeton côté serveur web.</li>
+<li>Effectuer des recherches sur les bibliothèques CSRF basées sur la sécurité.</li>
+</ol>
+
+<h3>En résumé</h3>
+<ul>
+  <li>Une faille cross-site scripting ou XSS est un script qui peut être exécuté dans votre site web.</li>
+  <li>Empêcher une faille XSS avec validation de l'entrée et un encodage de l'entrée.</li>
+  <li>Protégez vos cookies en activant l'option HttpOnly.</li>
+  <li>Les attaques CSRF peuvent se produire via social engineering.</li>
+  <li>Les attaques CSRF effectuent des transactions à l'insu de l'utilisateur.</li>
+</ul>
+
+
+
   </body>
   </html>
+  
+  
 
 
   <div class="inner_code"></div> 
@@ -734,7 +1056,9 @@ Voici quelques recommandations pour protéger vos données en transit :
       <img src="image/" alt="">
       <figcaption></figcaption>
     </figure>
-    <span style="color:rgb(140, 140, 140);"></span>
+    <span style="color:rgb(0, 0, 0);">.</span> <!-- point invisible code-->
+    <span style="color:rgb(206, 201, 201);">.</span> <!-- point invisible inner_code-->
+    <span style="color:rgb(140, 140, 140);"></span> <!-- commentaire -->
     <span style="color:red;"></span> <!--Ligne à souligner dans le code################-->
     <span class="keyboard"></span>
       <!--########### Commandes importantes border noire ########-->
