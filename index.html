@@ -9,7 +9,7 @@
 
   <body>
 
-    <div class="title">Sécurisez vos applications web avec l'OWASP</div>
+    <div class="title" id="title">Sécurisez vos applications web avec l'OWASP</div>
 
     <div class="content">
       <div class="sommaire">
@@ -18,7 +18,7 @@
             <li><strong><a href="#identify_risk">1.1 Identifiez les risques de sécurité pour une entreprise</a></strong></li>
             <li><strong><a href="#security_rule">1.2 Identifiez les règles de sécurité à appliquer par les entreprises</a></strong></li>
             <li><strong><a href="#owasp">1.3 Découvrez l'Open Web Application Security Project (OWASP)</a></strong></li>
-            <li><strong><a href="#"></a></strong></li>
+            <li><strong><a href="#injection">2.1 Protégez votre code contre l’injection</a></strong></li>
             <li><strong><a href="#"></a></strong></li>
             <li><strong><a href="#"></a></strong></li>
             <li><strong><a href="#"></a></strong></li>
@@ -38,7 +38,7 @@
         </ul>
       </div>
     </div>
-    <h3 class="sommaire_fixed"><a href="#sommaire">Index</a></h3>
+    <h3 class="sommaire_fixed"><a href="#title">Index</a></h3>
     
 
     <h2 id="identify_risk">1.1 Identifiez les risques de sécurité pour une entreprise</h2> 
@@ -162,11 +162,12 @@ Les vulnérabilités présentes dans le Top Ten existent dans les applications w
 Il n'existe pas de langage de programmation exempt de vulnérabilités.<br>
 Voici les 10 attaques les plus fréquentes contre les applications web, selon le Top Ten de l’OWASP en 2017.
 <ol>
-<li><strong>Injection</strong><br>
+<li href="#injection"><strong>Injection</strong><br>
   Une attaque par injection est une attaque permettant l’injection de code arbitraire dans l’application.<br>
   Cela se produit lorsque des données non maîtrisées sont exécutées par le moteur présent sur le backend de l’application.<br>
   Les données de l’attaquant sont exécutées sans autorisations adéquates.<br>
   L’injection de code non autorisée peut permettre à un attaquant d’accéder à des données auxquelles il n’a normalement pas accès.</li>
+  <strong><a href="#injection">2.1 Protégez votre code contre l’injection</a></strong>
 <li><strong>Piratage de session</strong><br>
   Beaucoup d'applications exigent qu'un utilisateur se connecte pour arriver sur des pages auxquelles lui seul a accès.<br>
   L’application est vulnérable à une attaque si un utilisateur malveillant peut obtenir un accès non autorisé aux mots de passe, clés et jetons pour pirater la session d'un autre utilisateur.</li>
@@ -210,7 +211,7 @@ Voici les 10 attaques les plus fréquentes contre les applications web, selon le
   De nombreux serveurs vulnérables servent de rebond aux attaquants.<br>
   La mise en place de monitoring permettra de détecter une anomalie sur le serveur.
 </li>
-</ol><br><br>
+</ol><br>
 <div class="remarque">
 Mais, est-il possible de sécuriser le code de toutes les attaques présentes dans le Top Ten de l'OWASP ?
 </div><br>
@@ -231,11 +232,155 @@ Comme vous avez pu le voir, il y a dix types d'attaques qui sont spécifiés dan
 <li>la désérialisation non sécurisée ;</li>
 <li>l'utilisation de composants présentant des vulnérabilités connues ;</li>
 <li>le manque de surveillance et de monitoring.</li>
-<li></li>
 </ol>
 Assurez-vous de bien comprendre la différence entre ces dix types d'attaques et la façon dont elles peuvent être liées à votre application web.
 
 
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+<h2 id="injection">2.1 Protégez votre code contre l’injection</h2>
+<h3>Découvrez l'injection</h3>
+Cette vulnérabilité permet à un attaquant d’injecter des données non maîtrisées qui seront exécutées par l’application et qui permettent d’effectuer des actions qui ne sont normalement pas autorisées.<br>
+Ces injections peuvent par exemple être des requêtes SQL pour manipuler la base de données, du code JavaScript ou HTML.<br><br>
+<div class="question"><img src="media/question-circle-regular.svg">À quel endroit un attaquant effectue une injection ?</div><br>
+Dans une application web, il existe des champs ou des formulaires.<br>
+Ce sont des composants des applications permettant la saisie de l’utilisateur.<br>
+Ces champs sont généralement la cible d’injections.<br>
+Ils se présentent sous la forme d'un formulaire HTML ou d'un champ texte.<br>
+Ce que vous avez tapé est ensuite traité.<br>
+Si vous tapez un nom d'utilisateur et un mot de passe, ils seront alors envoyés à la base de données pour pouvoir vous authentifier.<br><br>
+<div class="remarque">
+  Le type d'attaque par injection le plus connu est <strong>l'injection SQL</strong>.
+</div>
+Dans le cas d’une attaque par injection SQL, au lieu de mettre un nom d'utilisateur et un mot de passe sur une page de connexion, un utilisateur malveillant entrera des données directement interprétées par le moteur SQL, ce qui lui permettra de modifier le comportement de votre application.<br>
+Prenons un exemple de requête SQL :<br>
+<div class="code">SELECT * FROM accounts WHERE username='$username' AND password='$password' </div>
+<ul>
+<li><div class="inner_code">SELECT</div> est un mot clé permettant de sélectionner un élément de la base de données.</li>
+<li>Le caractère  <div class="inner_code">*</div>  indique que tous les éléments doivent être sélectionnés.</li>
+<li><div class="inner_code">FROM</div> permet d’indiquer la table à utiliser. Dans notre cas, le nom de la table est ‘accounts’.</li>
+<li><div class="inner_code">WHERE</div>  spécifie ce que vous voulez sélectionner.</li>
+<li><div class="inner_code">username='$username' AND password='$password'</div> sont les paramètres spécifiques recherchés par cette requête.</li>
+</ul>
+Cette requête peut être formalisée par : “Dans la liste des comptes, sélectionne le nom d'utilisateur et le mot de passe qui sont associés au données spécifiées.”<br><br>
+Par exemple, disons que quelqu'un a créé un compte avec le nom d'utilisateur :   <div class="inner_code">‘John’</div>, et le mot de passe :<div class="inner_code">‘ThisIsMySUperS3cr3tPass’</div>.<br>
+La requête SQL sera la suivante :<br>
+<div class="code">SELECT * FROM accounts WHERE username='John' AND password='ThisIsMySUperS3cr3tPass'</div><br>
+Si l’utilisateur John et son mot de passe sont présents dans la base de données, l’utilisateur sera authentifié.<br>
+Cette requête classique peut être contournée par le biais d’une injection SQL.<br>
+L’exemple suivant nous montre un cas d’exploitation classique.<br>
+<div class="code">
+  $username = 1' or '1' = '1’<br>
+$password = 1’ or ‘1’= ’1’
+</div><br><br>
+C'est ce qu'on appelle une instruction conditionnelle !<br>
+Elle nécessite que les requêtes respectent des conditions pour s’exécuter.<br><br>
+Dans ce champ,  <div class="inner_code">“$username = 1”</div> et <div class="inner_code">“$password = 1”</div>  sont comparés à l'instruction  <div class="inner_code">'1=1'</div>.<br>
+Ici, peu importent le username et le password entrés : l’instruction sera toujours valide.<br><br>
+Si nous reprenons notre requête précédente, elle sera interprétée de la manière suivante :<br>
+<div class="code">
+  SELECT * FROM accounts WHERE username=1' or ‘1’=’1' AND password=1' or ‘1’=’1''
+</div><br><br>
+Un utilisateur malveillant sera ainsi en mesure de s’authentifier avec n’importe quel compte de la base de données, en l'occurrence, ici, le premier compte de la table Account sera utilisé.
+
+
+<h3>Sécurisez une application contre l’injection SQL</h3>
+Pour garantir une protection contre l’injection SQL, il est possible d’utiliser un pare-feu d'application web ou WAF, pour Web Application Firewall en anglais.<br>
+Ce pare-feu se place entre l'utilisateur et l’application web et permet de vérifier et d'intercepter les données envoyées.<br>
+Toutefois il est également possible de sécuriser l’application directement dans le code.
+<h4>Validez les entrées</h4>
+La validation des entrées est une excellente pratique en tant que développeur web.<br>
+Elle limite ce que l'utilisateur peut mettre dans la zone de texte.<br>
+Avez-vous déjà été frustré lors de la création d'un compte parce qu'il n'était pas possible de créer un mot de passe sans chiffres ou lettres majuscules ?<br>
+C'est parce que la validation des entrées a été implémentée : l'entrée est analysée après avoir appuyé sur Entrée.<br>
+Cela n'empêchera pas l'injection, mais c'est une mesure que vous pouvez mettre en place pour limiter des attaques de base.<br>
+En effet, les caractères spéciaux spécifiques à certains langages ne pourront pas être utilisés.<br><br>
+<div class="question">Quels types de caractères peut-on limiter lors de la saisie utilisateur ?</div>
+Si vous avez dit le <strong>signe égal et l'apostrophe</strong>, vous êtes sur la bonne voie !<br>
+En effet, ces caractères sont interprétés par le moteur de base de données, ce qui veut dire que si un attaquant peut les rentrer dans un champ, ils pourront potentiellement altérer le fonctionnement ;<br>
+ c’est le principe d’une injection SQL.
+<h4>Paramétrez vos variables !</h4>
+Vous pouvez écrire vos requêtes SQL en paramétrant les variables.<br>
+C'est ce qu'on appelle une requête préparée.<br>
+Examinons l'exemple précédent.<br>
+<div class="code">
+  SELECT * FROM accounts WHERE username='$username' AND password='$password'
+</div><br><br>
+Pour l'instant, la requête connecte la variable <div class="inner_code">$username</div> directement à la base de données, la rendant vulnérable à l'injection.<br>
+Avec une requête préparée, le code ressemblerait à ceci :<br>
+<div class="code">
+  SELECT * FROM accounts WHERE username='@username' AND password='@password'
+</div><br><br>
+Les variables Nom d'utilisateur et Mot de passe sont paramétrées,<br>
+elles seront donc désormais passées dans une méthode pour exécuter la requête au lieu de se connecter directement à la base de données.<br>
+<div class="code">
+  $username = setUser(username)<br>
+$password = setPassword(password)
+</div><br><br>
+Il existe de nombreuses façons de sécuriser les requêtes SQL,<br>
+mais comme la requête ne se connecte pas directement à la base de données,<br>
+il s'agit de l'une des meilleures pratiques pour sécuriser vos données contre l'injection SQL.<br><br>
+<div class="remarque">
+  Les langages Java, .NET, ColdFusion, PHP et Ruby ont également des fonctions intégrées pour paramétrer vos variables.
+</div>
+
+<h4>Découvrez la différence entre requêtes SQL stockées ou dynamiques</h4>
+Lorsque vous codez un champ d’entrée utilisateur sur votre application web, vous devez écrire une procédure SQL pour que la base de données sache quelles données extraire.<br>
+Il y a deux façons de le faire :  <strong>stocké et dynamique</strong>.<br>
+<strong>Une procédure stockée</strong> est un ensemble d'instructions SQL précompilées,<br>
+stockées dans une base de données et exécutées sur demande par le système de gestion de base de données qui manipule la base de données.<br>
+<strong>Une procédure dynamique</strong> est une technique de programmation qui vous permet de construire des instructions SQL de manière dynamique lors de l'exécution.<br>
+Les requêtes ne seront pas stockées mais dynamiquement créées.<br><br>
+Pour sécuriser les requêtes SQL dynamiques, vous pouvez utiliser la fonction  <div class="inner_code">sp_executesql</div>  dans votre procédure SQL dynamique.<br>
+Voyons un exemple d’implémentation avec les variables paramétrées ci-dessous :<br>
+<div class="code">
+  CREATE PROCEDURE sp_owaspLogin<br>
+  <br>
+@bind_username varchar(10)<br>
+
+@bind_password varchar(10)<br>
+<br>
+AS<br>
+<br>
+BEGIN<br>
+<br>
+DECLARE @myquery varchar(100)<br>
+<br>
+SET @myquery = N’SELECT login FROM accounts WHERE username = @username AND password = @password’<br>
+<br>
+DECLARE @bind_user nvarchar(10) = N’@username’;<br>
+<br>
+DECLARE @bind_pass nvarchar(10) = N’@password’;<br>
+<br>
+EXEC sp_executesql @myquery, @bind_user, @username = @bind_username;<br>
+</div><br><br>
+La requête SQL dynamique ci-dessus lie la variable ainsi que la fonction  <div class="inner_code">sp_executesql</div>  pour sécuriser le script.
+
+<h4>Utilisez un Object Relational Mapper (ORM)</h4>
+De nombreux langages disposent d'outils ORM (Object Relational Mapper) qui peuvent obfusquer votre requête, c’est-à-dire masquer son fonctionnement.<br>
+Les modules ORM tels que <div class="inner_code">pg</div> et <div class="inner_code">knex</div> peuvent être utilisés avec des frameworks JavaScript.<br>
+Regardons la requête SQL suivante :<br>
+<div class="code">SELECT * FROM accounts WHERE username='@username' AND password='@password'  </div><br><br>
+Tout d'abord, notez que  <div class="inner_code">@username</div> et <div class="inner_code">@password</div>  sont paramétrés !<br><br>
+Voici un exemple de la façon dont une requête correcte sera exécutée dans votre application web à l'aide de knex Node.js.<br>
+Dans le code ci-dessous, knex obfusque la requête.<br>
+Cela signifie qu'il masque ce à quoi ressemble vraiment la requête SQL, ce qui permet d’ajouter une couche de sécurité supplémentaire.<br>
+<div class="code">knex('accounts').where('username',john ).orWhere({password: ThisIsMySUperS3c3tPass , user: 'knex'})</div><br><br>
+
+<h4>Sécurisez vos applications avec l’API OWASP</h4>
+L'organisation OWASP dispose d'une API appelée the OWASP Enterprise Security API (ESAPI).<br>
+Elle peut être utilisée pour sécuriser vos applications web.<br><br>
+<div class="remarque">
+  Pour en savoir plus sur l'ESAPI, visitez la <a href="https://owasp.org/www-project-enterprise-security-api/" target='_blank'>page web officielle</a>.
+</div>
+
+<h3>En résumé</h3>
+<ul>
+<li>Les injections peuvent inclure (mais sans s'y limiter) des commandes SQL, JavaScript, HTML ou OS.</li>
+<li>Elles permettent de manipuler les entrées pour effectuer des actions et accéder à des données normalement non autorisées. </li>
+<li>Vous pouvez prévenir les attaques par injection en sécurisant votre code avec la validation des entrées, les variables paramétrées, les ORM et les procédures SQL stockées.</li>
+<li>Les procédures SQL dynamiques peuvent être dangereuses, donc assurez-vous d'utiliser la fonction executesql() dans la base de données pour les sécuriser.</li>
+</ul>
 
 
 
@@ -246,6 +391,13 @@ Assurez-vous de bien comprendre la différence entre ces dix types d'attaques et
 
 
 
+
+
+
+
+
+
+<strong></strong>
 
 
 
@@ -263,7 +415,7 @@ Assurez-vous de bien comprendre la différence entre ces dix types d'attaques et
   </html>
 
 
-  <strong><u></u></strong> 
+  <div class="inner_code"></div> 
   <h5><a href="#sommaire">Sommaire</a></h5>
   
     <h2 id="1">- 1 -</h2> 
