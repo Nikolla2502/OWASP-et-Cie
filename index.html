@@ -26,6 +26,10 @@
             <li><strong><a href="#acces">2.5 Empêchez l'exploitation des contrôles d'accès</a></strong></li>
             <li><strong><a href="#xss">2.6 Stoppez le cross-site scripting (XSS)</a></strong></li>
             <li><strong><a href="#xxe">2.7 Protégez votre code contre les failles XXE et la désérialisation non sécurisée</a></strong></li>
+            <li><strong><a href="#environnement">2.8 Sécurisez votre environnement de développement</a></strong></li>
+            <li><strong><a href="#security">3.1 Testez la sécurité de votre application</a></strong></li>
+            <li><strong><a href="#life_cycle">3.2 Appliquez le cycle de vie du développement logiciel sécurisé</a></strong></li>
+            <li><strong><a href="#owasp_top10">3.3 OWASP TOP TEN 2017</a></strong></li>
         </ul>
       </div>
       <div class="sommaire">
@@ -45,6 +49,8 @@
           <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authorization_Cheat_Sheet.md" target='_blank'>OWASP - Controle acces</a></li>
           <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html" target='_blank'>OWASP XSS</a></li>
           <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md" target='_blank'>XML External Entity Prevention Cheat Sheet</a></li>
+          <li><a href="https://cve.mitre.org/" target='_blank'>Common Vulnerabilities and Exposures</a></li>
+          <li><a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html" target='_blank'>OWASP - Security Misconfiguration</a></li>
         </ul>
       </div>
     </div>
@@ -1234,6 +1240,246 @@ Pour empêcher l'accès privilégié non autorisé à l'aide de l'objet déséri
     peut être évitée en créant des contrôles sur l'état du code.
   </li>
 </ul>
+
+
+    <h5><a href="#sommaire">Sommaire</a></h5>
+  
+    <h2 id="environnement">2.8 Sécurisez votre environnement de développement</h2> 
+  <h3>Faites face aux vulnérabilités connues</h3>
+  Il est important de faire des recherches sur les outils de votre environnement de développement pour être au courant de toutes les vulnérabilités et des méthodes d'atténuation.<br>
+  Documentez tous les modules, API et bibliothèques utilisés, ainsi que les vulnérabilités connues afin de garder une trace des actions effectuées.<br><br>
+  <div class="question"><img src="media/question-circle-regular.svg">Comment savoir si un des outils que j'utilise présente une vulnérabilité connue ?</div><br><br>
+  Pensez à consulter les bases de données sur le web.<br>
+  La base de données <a href="https://cve.mitre.org/" target='_blank'>Common Vulnerabilities and Exposures</a> (en anglais), créée par le MITRE, est un excellent outil à utiliser.<br> 
+  Le MITRE est une organisation à but non lucratif qui effectue des travaux liés à la cybersécurité.<br><br>
+
+Voici quelques conseils pour vous assurer que votre environnement est sécurisé :
+<ul>
+  <li>documentez les versions de chaque composant de votre application, y compris le firmware de la carte réseau du serveur ;</li>
+  <li>examinez vos composants physiques, vos applications, votre système d'exploitation, vos API, vos bibliothèques et les versions des langages utilisées.</li>
+</ul>
+
+<h3>Identifiez votre environnement pour éviter les failles de sécurité</h3>
+Vous pouvez appliquer toutes les pratiques de programmation sécurisée que vous connaissez,<br>
+ mais si vous vous retrouvez avec votre application web dans un environnement qui n'est pas sécurisé,<br>
+  cela peut l'ouvrir à d'autres attaques.<br><br>
+Il est très important d'avoir une bonne configuration de sécurité pour l'environnement qui héberge votre application web afin d'assurer sa disponibilité et son intégrité.<br>
+Par ailleurs, il faudra également mettre en place des couches de sécurité telles qu'un pare-feu (WAF).<br>
+Ce pare-feu devra être configuré de manière optimale pour s'assurer que seuls les ports requis sont ouverts afin de renforcer la sécurité.<br>
+Un outil comme un SIEM (Security information management system) peut détecter les événements et assurer la gestion de la sécurité du serveur.<br> 
+En dehors du serveur d'application web et du pare-feu, se trouve le serveur physique lui-même.<br>
+En règle générale, les services cloud qui fournissent cet espace ont déjà mis en place des mesures de sécurité.<br>
+Assurez-vous que les normes de conformité pour le service cloud utilisées sont conformes aux exigences de la politique de sécurité de votre application web.<br>
+La configuration de sécurité du serveur physique et du pare-feu pour la plateforme de cloud nécessitent une configuration stricte.<br><br>
+Le contrôle d'accès pour les composants externes de l'environnement, tels que la plateforme et l'administration du serveur, sont d'autres moyens par lesquels un attaquant peut obtenir un contrôle non autorisé à une application web.<br>
+Ces. facteurs doivent être correctement configurés et documentés.
+
+<h3>Sécurisez votre environnement</h3>
+Après avoir pris connaissance des composants de votre environnement, vous devez vous assurer que les configurations sont à la hauteur de la sécurité requise.<br>
+La bonne gestion des vulnérabilités est un élément critique pour maintenir la sécurité de votre application web.<br><br>
+Prenons un exemple concret.<br><br>
+Supposons que la plateforme sur laquelle est hébergée votre application web dispose d'une console d'administration.<br>
+Votre patron insiste sur le fait que la plateforme a la réputation d'être sécurisée et qu'elle utilise un service cloud populaire !<br>
+Il vous dit aussi que tout est configuré et qu'il vous suffit de paramétrer votre application web sur la plateforme.<br>
+Tout est sécurisé !<br><br>
+Le site est détourné, et devinez quoi ?<br>
+Les pirates avaient un accès complet à votre application web parce qu'ils pouvaient accéder à la console d'administration.<br>
+Apparemment, certaines des informations d'identification par défaut n'ont pas été supprimées,<br>
+et comme ces informations d'identification sont déjà connues des attaquants,<br>
+ils attendent que la même application web apparaisse avec les paramètres par défaut !<br><br>
+La sécurisation de votre code avec l’OWASP n’a pas d’intérêt si un attaquant a accès au code source et peut se connecter directement dans la console d'administration.<br>
+Quelle est la leçon à tirer ici ?<br>
+Sécurisez toutes vos applications externes !<br>
+Une mauvaise configuration de sécurité peut se produire à n'importe quel niveau,<br>
+y compris les services réseau, la plateforme, le serveur web, le serveur d'applications, la base de données, les frameworks, le code personnalisé et les machines virtuelles, conteneurs ou stockage préinstallés.<br><br>
+<div class="remarque">
+  Vous pouvez en apprendre davantage avec sur cette page du site de l'<a href="https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration.html" target='_blank'>OWASP</a> (en anglais).
+</div><br><br>
+Pour <strong>les services réseau</strong>, vous allez examiner l'infrastructure de votre serveur web et vous assurer que les meilleures pratiques sont utilisées pour sécuriser vos services.<br>
+Vous avez des serveurs FTP de base de données ou LDAP (Lightweight Directory Access Protocol) qui peuvent être compromis par les mauvaises personnes !<br>
+Les systèmes d'authentification doivent suivre les meilleures pratiques de sécurité.<br><br>
+Voici quelques bonnes questions à poser :
+<ul>
+  <li>Existe-t-il des pare-feux pour toutes les applications et tous les serveurs ? </li>
+  <li>Est-ce que seuls les ports nécessaires sont ouverts avec des ensembles de règles limités ?</li>
+  <li>Les pare-feux limitent-ils le type de trafic sur les ports ouverts ?</li>
+  <li>De plus, y a-t-il un processus mis en place pour détecter les anomalies dans le trafic web ?</li>
+</ul>
+<strong>Le trafic web</strong> devrait également être surveillé pour déceler les anomalies.<br>
+Imaginez si quelqu'un commençait à effectuer des scans de ports pour rechercher périodiquement les ports ouverts.<br>
+Il y a des outils qui peuvent détecter de tels événements pour avertir les administrateurs qu'il y a une tentative possible de piratage du site.<br><br>
+Concernant <strong>l'application et la plateforme</strong>, nous avons parlé du nom d'utilisateur et des mots de passe par défaut pour les serveurs, les applications et les bases de données.<br>
+Nous avons également passé en revue la détection et l'enregistrement des événements possibles.<br>
+Assurez-vous qu'ils ne révèlent pas les informations de base sur votre site, telles que les noms d'utilisateur, les fichiers, les configurations IP et les données de base pour l'entreprise et les personnes.<br><br>
+Tous <strong>les aspects administratifs</strong> tels que les répertoires et les fichiers de configuration pour toutes les applications doivent être protégés des regards indiscrets.<br>
+Protégez le code source et la structure des fichiers en vous assurant que le serveur web est verrouillé.<br><br>
+Toutes vos applications sont hébergées sur des systèmes d'exploitation.<br>
+Assurez-vous que les applications ont un accès <strong>minimal</strong> au système d'exploitation, car le piratage du système d'exploitation est un moyen sûr de prendre le contrôle de votre application.<br><br>
+Vous disposez également de <strong>jetons d'accès</strong>, de <strong>mots de passe d'authentification</strong> et de <strong>clés de chiffrement</strong> !<br>
+ Protégez-les également.<br><br>
+Enfin, <strong>les exceptions</strong> et <strong>les codes d'erreur</strong> en disent long sur votre application, votre code source, le fonctionnement du réseau, la structure des fichiers de votre base de données, les répertoires de fichiers et plus encore.<br>
+Les attaquants cherchent ce type d'information.<br>
+Une stack trace peut être utile lorsque vous déboguez votre application ; cependant, si elle est utilisée à des fins malveillantes, la quantité d'informations qu'elle peut révéler peut être dangereuse !<br><br>
+<div class="remarque">
+  Une stack trace est la représentation des piles d'exécution à un moment donné lors de l'exécution d'un programme informatique.
+</div>
+
+<h3>En résumé</h3>
+<ul>
+  <li>Lors de la conception d'une application web, évaluez les composants présentant des vulnérabilités connues.</li>
+  <li>Les composants peuvent présenter de nouvelles vulnérabilités tout au long du cycle de vie du produit.</li>
+  <li>Patchez toujours les zones présentant de nouvelles vulnérabilités.</li>
+  <li>Votre travail n'est pas terminé après que vous ayez écrit un code sécurisé.</li>
+  <li>Assurez-vous que les pare-feux et les plateformes sont protégés et configurés de manière à respecter les bonnes pratiques de sécurité.</li>
+  <li>Connectez-vous avec les administrateurs de bases de données pour vous assurer que la base de données est sécurisée.</li>
+</ul>
+
+
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+<h2 id="security">3.1 Testez la sécurité de votre application</h2>
+
+<h3>Réalisez des tests</h3>
+Ces tests font partie du <strong>processus de développement d’une application web</strong> ;<br>
+cependant, il est nécessaire de les réaliser tout au long du cycle de vie de l’application pour s’assurer que la sécurité est toujours maintenue.<br><br>
+Une partie des tests consiste à effectuer des scans de vulnérabilité.<br>
+Ces scans utilisent des attaques typiques basées sur les dix principaux risques de sécurité de l'OWASP et les vulnérabilités connues des composants du framework utilisé.<br>
+Ils permettront d’identifier rapidement une vulnérabilité commune ou une mauvaise configuration. <br><br>
+Une fois que l’application respecte les bonnes pratiques de sécurité de base de l’OWASP,<br>
+il sera possible d’apporter des mesures de sécurité supplémentaires pour être conforme aux normes telles que PCI DSS par exemple.<br>
+Les tests de sécurité doivent fournir à l'entreprise une bonne idée du niveau de sécurité de son application web.<br><br>
+Toutefois, cela ne signifie pas qu'une application web est conforme et prête à être utiliser.<br>
+Une entreprise ne peut pas utiliser ses propres services pour prouver qu'elle est accréditée, parce qu'il serait difficile de rester impartial par rapport à des lignes directrices strictes.<br>
+Un prestataire tiers est tenu de certifier la conformité d'une application web.<br><br>
+Les prestataires tiers spécialisés dans la conformité de la sécurité des applications web utilisent des techniques d'analyse des vulnérabilités et de tests d’intrusion pour vérifier la sécurité de l'application web.<br>
+Dans le cas de l'OWASP, la sécurité de l'application web et de ses composants sera testée.<br><br>
+Vous devriez vérifier régulièrement la conformité à l'OWASP.<br>
+Ensuite, retestez à mesure que de nouvelles vulnérabilités et de nouveaux correctifs apparaissent.<br>
+Toute nouvelle vulnérabilité devra être atténuée pour satisfaire les normes en vigueur.<br>
+Les entreprises sont responsables de l'acquisition et du maintien de la conformité en fonction de leurs exigences en matière de sécurité.
+
+<h3>Découvrez différentes techniques de tests</h3>
+Savoir qu'il faut tester, c'est bien.<br>
+Mais quelles sont les techniques de tests ?
+<h4>Le fuzzing</h4>
+Le fuzzing est une technique utilisée pour tester les zones où les données sont entrées sur votre application web.<br>
+Il teste les entrées aléatoirement pour s'assurer que les techniques de validation appropriées sont utilisées.<br>
+Le fuzzing va permettre de tester l'injection SQL et les attaques XSS, par exemple !
+<h4>L’audit de code</h4>
+L'audit de code peut être effectué manuellement ou à l'aide d'un outil automatisé.<br>
+Il implique souvent une analyse ligne par ligne du code source pour trouver les éléments ou fonctions vulnérables.<br>
+Ce test garantit que les fonctions vulnérables communes ne sont pas utilisées dans le code.<br>
+Cela peut permettre de détecter des injections SQL, par exemple.<br>
+Bien que votre code puisse réussir un test d'analyse de code,<br>
+il peut toujours être vulnérable au contrôle d'accès, au piratage de session, aux problèmes de configuration dans le framework et aux algorithmes cryptographiques faibles.
+<h4>Découvrez les modèles de menace (Threat Modeling)</h4>
+Un modèle de menace est un processus par lequel des menaces potentielles,<br>
+telles que les vulnérabilités structurelles (c'est-à-dire inhérentes à la structure de votre application) peuvent être identifiées, énumérées et classées par ordre de priorité.
+Lorsqu'une entreprise établit un modèle de menace, elle tient compte des différents adversaires qui tenteront de compromettre le système.<br>
+En fonction du profil des adversaires, vous pouvez établir un modèle de menace afin de déterminer quelles parties doivent être verrouillées pour atténuer votre risque. <br><br>
+Voici quelques questions que vous pouvez poser pour créer votre modèle de menace :
+<ul>
+  <li>Quelles sont les données que vous devez protéger ?</li>
+  <li>Qui exploitera les données ?</li>
+  <li>Quelle est la probabilité qu'une vulnérabilité soit exploitée ?</li>
+  <li>Quels dommages cette exploitation peut-elle causer ?</li>
+  <li>Quelle est votre protection contre cet exploit ?</li>
+</ul>
+  
+<h3>Corrigez les vulnérabilités zero day</h3>
+Vous ne pouvez jamais être entièrement sûr que votre application web ne sera pas attaquée via l’exploitation d’une vulnérabilité qui n’a pas de correctif.<br>
+C'est ce qu'on appelle les <strong>vulnérabilités zero day</strong>. <br><br>
+Lorsque des vulnérabilités zero day sont découvertes, les éditeurs de logiciels développent un correctif pour corriger la vulnérabilité.<br>
+Cependant, dans de nombreux cas, le correctif est appliqué après avoir fait beaucoup de dégâts.<br>
+C'est pour cette raison qu'il est important de maintenir la sécurité de votre application et de la défendre contre les vulnérabilités en la patchant régulièrement.<br>
+Ces différents éléments peuvent vous permettre de réduire le risque de compromission et d’améliorer la sécurité de votre application tout au long de son cycle de vie.
+
+<h3>En résumé</h3>
+  <ul>
+    <li>L'entreprise ne peut pas simplement s'accréditer comme étant conforme aux réglementations telles qu'OWASP ou PCI-DSS.</li>
+    <li>Elle aura besoin d'un prestataire tiers spécialisé dans l'examen de la conformité.</li>
+    <li>Les règlements peuvent être très stricts pour les grandes entreprises,<br>
+      de sorte qu'il faut parfois des mois d'essais pour obtenir la certification.</li>
+    <li>L'analyse de vulnérabilité et les tests d’intrusion sont parfaits pour tester les attaques sur une application web.</li>
+    <li>L’audit de code source permet d’identifier les fonctionnalités vulnérables. </li>
+    <li>Le threat modeling peut vous permettre d'identifier les potentiels attaquants et d’ajuster vos défenses. </li>
+    <li>Les vulnérabilités zero day représentent un risque majeur pour vos applications. </li>
+  </ul>
+
+
+  <h5><a href="#sommaire">Sommaire</a></h5>
+  
+  <h2 id="life_cycle">3.2 Appliquez le cycle de vie du développement logiciel sécurisé</h2>
+  
+<h3>Découvrez si le cycle de vie du développement logiciel (SDLC) est adéquat</h3>
+Le cycle de vie du développement logiciel commence généralement par les phases de collecte des exigences, de conception, de mise en œuvre, d’essais et de diffusion (évolution).<br>
+Ce cycle de base ne tient pas compte des vulnérabilités.<br>
+Les pratiques de codage sécurisé que nous avons apprises dans ce cours ne font étonnamment pas partie du cycle de vie moyen de développement d'un logiciel.<br>
+La sécurité n'est en effet pas une priorité dans la plupart des cycles de développement logiciel.<br>
+Il n'est donc pas surprenant que 80 % des applications web en production aujourd'hui soient vulnérables aux attaques courantes !<br><br>
+
+<h4>Découvrez comment est gérée la sécurité dans un cycle de vie logiciel traditionnel</h4>
+Dans un cycle de vie classique, la sécurité n'est pas prise en compte dès le début de l'élaboration de l'application.<br>
+Alors que se passe-t-il lorsque des vulnérabilités apparaissent lors des tests ?<br>
+Les problèmes sont renvoyés à l'équipe de développement.<br>
+Mais la reconception et le développement d'un grand nombre de fonctionnalités de base peuvent s'avérer coûteux.<br><br>
+Que se passe-t-il lorsque des vulnérabilités apparaissent après la sortie du logiciel ?<br>
+Puisqu'il est déjà en production, vous ne pouvez pas revenir en arrière et réparer le code original.<br>
+Maintenant, vous devez créer un patch et espérer que les clients l'appliqueront.
+
+<h3>Ajoutez la sécurité au cycle de vie du développement logiciel</h3>
+De nombreuses organisations, dont l'OWASP, ont proposé un cycle de vie intégré de la sécurité (SDLC) ou un cycle de vie de développement logiciel sécurisé (SSDLC).<br>
+Il y a encore beaucoup de débats à ce sujet ; cependant, dans la production d'applications web à grande échelle, la sécurité sera très probablement intégrée dans le modèle SDLC déjà utilisé par les entreprises.<br>
+Dans ce cours, nous avons vu comment intégrer la sécurité dans les phases de conception et de mise en œuvre du cycle de vie.
+
+<h3>En résumé</h3>
+<ul>
+  <li>Le cycle SDLC est utilisé par les organisations qui ont de grands projets logiciels.</li>
+  <li>Traditionnellement, il n'inclut pas le développement sécurisé comme partie intégrante du processus.</li>
+  <li>Le fait de ne pas assurer la sécurité dans le cycle SDLC entraîne une augmentation du temps et de l'argent consacrés à la correction du code non sécurisé.</li>
+  <li>Utilisez SSDLC pour ajouter la sensibilisation à la sécurité dans chaque phase du SDLC.</li>
+</ul>
+
+
+
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+<h2 id="owasp_top10">3.3 OWASP TOP TEN 2017</h2> 
+<ol>
+  <li><strong>L’injection :</strong><br>
+    elle permet d’injecter du code arbitraire pour effectuer des actions qui seront interprétées par l’application.<br>
+    Pour bloquer ce genre d’attaque, il est possible d’utiliser des fonctions sécurisées ou encore de valider les entrées utilisateurs.</li>
+  <li><strong>Le piratage de session :</strong><br>
+    il se produit lorsque le système d’authentification a été contourné, par exemple en utilisant la technique de force brute.<br>
+    Pour se protéger contre ce type d’attaque, il faudra non seulement forcer les utilisateurs à utiliser des mots de passe forts, mais également sécuriser l’utilisation des cookies de session, par exemple.</li>
+  <li><strong>L'exposition de données sensibles :</strong><br>
+    elle se produit en cas de fuite de données, par exemple.<br>
+    Pour se protéger contre ce type d’attaque, il faudra utiliser des solutions de chiffrement pour sécuriser les données en transit et celles stockées sur l’application.</li>
+  <li><strong>Les entités externes XML (XXE) :</strong><br>les vulnérabilités XXE peuvent être utilisées pour accéder à des données internes de l’application normalement non accessibles.<br>
+    Pour éviter ce type d’attaque, il est possible de désactiver les entités externes. </li>
+  <li><strong>Le contournement des contrôles d'accès :</strong><br>les contrôles d’accès permettent d’empêcher un utilisateur d’accéder aux données d’un autre utilisateur.<br>
+    Pour éviter qu’un  attaquant puisse exploiter cette vulnérabilité, assurez-vous que toutes les pages de votre application ont un contrôle d'authentification. </li>
+  <li><strong>Les mauvaises configurations de sécurité :</strong><br>
+    elles peuvent être à l’origine de nombreuses attaques.<br>
+    Assurez-vous de garder à jour les composants de votre application pour éviter qu’une vulnérabilité ne soit exploitée. </li>
+  <li><strong>Les scripts XSS (cross-site scripting) :</strong><br>
+    les failles XSS permettent à un attaquant d’injecter du code JavaScript.<br>
+    Utilisez la validation et la transformation des entrées utilisateurs pour les éviter.</li>
+  <li><strong>La désérialisation non sécurisée :</strong><br>
+    cette vulnérabilité peut permettre à un attaquant de mener une attaque d’élévation de privilège, de replay ou encore d’injection.<br>
+     Pour éviter ce type d’attaque, il est possible d’implémenter des contrôles sur l’état du code. </li>
+  <li><strong>L'utilisation de composants contenant des vulnérabilités connues :</strong><br>
+    une application est basée sur de nombreux composants.<br>
+    Pour éviter l’exploitation d’une vulnérabilité, il faudra maintenir à jour et identifier les éléments de votre application.</li>
+  <li><strong>Le manque de monitoring et de surveillance :</strong><br>
+    le monitoring et la surveillance permettront de détecter une intrusion ou un comportement suspicieux au plus tôt.<br>
+    Vérifiez régulièrement vos logs et mettez en place des reportings.</li>
+</ol>
+
+
+
+
+
 
 
 
