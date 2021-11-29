@@ -26,7 +26,8 @@
             <li><strong><a href="#acces">2.5 Empêchez l'exploitation des contrôles d'accès</a></strong></li>
             <li><strong><a href="#xss">2.6 Stoppez le cross-site scripting (XSS)</a></strong></li>
             <li><strong><a href="#xxe">2.7 Protégez votre code contre les failles XXE et la désérialisation non sécurisée</a></strong></li>
-            <li><strong><a href="#environnement">2.8 Sécurisez votre environnement de développement</a></strong></li>
+            <li><strong><a href="#environnement">2.8 Sécurisez votre environnement de développement</a></strong><br>
+              <a href="#env">- Fichier d'environnement</a></li>
             <li><strong><a href="#security">3.1 Testez la sécurité de votre application</a></strong></li>
             <li><strong><a href="#life_cycle">3.2 Appliquez le cycle de vie du développement logiciel sécurisé</a></strong></li>
             <li><strong><a href="#owasp_top10">3.3 OWASP TOP TEN 2017</a></strong></li>
@@ -1323,6 +1324,100 @@ Une stack trace peut être utile lorsque vous déboguez votre application ; cepe
 <div class="remarque">
   Une stack trace est la représentation des piles d'exécution à un moment donné lors de l'exécution d'un programme informatique.
 </div>
+<h3 id='env'>Fichier d'environnement</h3>
+Afin de securiser les données lors du deploiement , il est necessaire de créer <strong>un fichier contenant les données sensible qui ne sera pas deployer sur une plateforme publique</strong>.<br>
+Pour connecter à notre base de donnée MongoDB nous avons besoins du URL de connection.<br>
+MongoDB va nous fournir ce URL.<br>
+Le truc c'est que pour des raisons de sécurité évidente, nous ne pouvons pas utiliser cet URL de connection directement dans notre code.<br>
+L' URL de connection doit être placé dans un fichier qui sera hors d'atteinte des utilisateurs lors du déploiement.<br>
+Pour ce faire nous allons donc créer un fichier qui contiendra notre URL de connection.<br>
+Par convention ce fichier de nomme <strong><u>.env</u></strong> (dot env)<br><br>
+Installer la dependance NPM:<br>
+<strong><u>npm install dotenv</u></strong><br><br>
+Il faudra ensuite declare <div class="inner_code">dotenv</div> dans les fichiers qui contiennent des mots de passe<br>
+Ajouter la dependance<br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// auth.js</span><br>
+  require('dotenv').config()
+</div><br><br>
+
+
+<h3>MongoDB</h3>
+Créer le fichier <strong><u>.env</u></strong> à la racine du Backend et inclure l' URL de connection MongoDB<br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// .env </span><br>
+  MONGO_URI = 'mongodb+srv://< username >:< password >@nodeexpress.my1j7.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+</div><br>
+<strong>MONGO_URI</strong> deviendra la variable a exporter dans le fichier <strong><u>app.js</u></strong><br><br>
+Ajouter la dependance dans le fichier <strong><u>app.js</u></strong> avant <strong><u>mongoose.connect</u></strong><br>
+<div class="code">
+  require('dotenv').config()
+</div><br><br>
+Modifier la connexion mongoose dans le fichier <strong><u>app.js</u></strong>:<br>
+<div class="code">
+  mongoose.connect('mongodb+srv://jimbob:@cluster0-pme76.mongodb.net/test?retryWrites=true&w=majority')
+</div> <br>
+devient<br>
+<div class="code">
+  mongoose.connect(process.env.MONGO_URI)
+</div>
+
+<h3>JsonWebToken</h3>
+Ajouter dans le fichier <strong><u>.env</u></strong> la chaine de caractère choisi pour  <strong>JsonWebToken</strong><br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// .env </span><br>
+  TOKEN = 'RANDOM_TOKEN_SECRET'
+</div><br><br>
+Dans le fichier <strong><u>auth.js</u></strong> remplacer la valeur du token par la variable<strong>TOKEN</strong><br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// auth.js (origin)</span><br>
+  const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+</div><br><br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// auth.js (Modifié)</span><br>
+  const decodedToken = jwt.verify(token, TOKEN);
+</div><br><br>
+Ajouter la dependance<br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// auth.js</span><br>
+  require('dotenv').config()
+</div><br><br>
+Dans le fichier <strong><u>userCtrl.js</u></strong> remplacer la valeur du token par la variable<strong>TOKEN</strong><br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// userCtrl.js (origin)</span><br>
+  token: jwt.sign({ userId: user._id },'RANDOM_TOKEN_SECRET',{ expiresIn: '24h' })
+</div><br><br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// userCtrl.js (Modifié)</span><br>
+  token: jwt.sign({ userId: user._id },TOKEN,{ expiresIn: '24h' })
+</div><br><br>
+Ajouter la dependance<br>
+<div class="code">
+  <span style="color:rgb(140, 140, 140);">// userCtrl.js</span><br>
+  require('dotenv').config()
+</div><br><br>
+Le fichier <strong><u>.env</u></strong> devrait contenir ces données<br>
+<div class="code">
+  MONGO_URI = 'mongodb+srv://< username >:< password >@nodeexpress.my1j7.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'<br>
+  TOKEN = 'RANDOM_TOKEN_SECRET'
+</div><br><br>
+Ce fichier ne sera pas mis en ligne publiquement<br><br>
+Créer un fichier <strong><u>.env.dist</u></strong> qui sera deployé à la place et qui contient les variables sans leur valeur ,<br>
+l'utilisateur renseigne ses propre variable.<br>
+<div class="code">
+  MONGO_URI = 'mongodb+srv://< Votre identifiant Mongodb>:< Votre mot de passe Mongodb>@cluster0.kuvdm.mongodb.net/P6Piiquante?retryWrites=true&w=majority';<br>
+  TOKEN = '< votre chaîne secrète>'<br><br>
+  MONGO_URI = Veuillez renseigner votre identifiant et mot de passe MongoDB<br>
+  TOKEN = Veuillez renseigner votre chaîne secrète<br>
+  Retirer l'extension ".dist"<br>
+</div><br>
+
+
+<ul><strong>Utilisation du fichier .env</strong>
+<li><strong><a href="https://nodejs.dev/learn/how-to-read-environment-variables-from-nodejs" target="_blank">How to read environment variables from Node.js</a></strong></li>
+<li><strong><a href="https://dev.to/ericlecodeur/nodejs-express-partie-6-base-de-donnees-mongodb-3n2m">Créer le fichier .env pour MongoDB</a></strong></li>
+</ul>
+
 
 <h3>En résumé</h3>
 <ul>
