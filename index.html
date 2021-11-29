@@ -18,12 +18,14 @@
             <li><strong><a href="#identify_risk">1.1 Identifiez les risques de sécurité pour une entreprise</a></strong></li>
             <li><strong><a href="#security_rule">1.2 Identifiez les règles de sécurité à appliquer par les entreprises</a></strong></li>
             <li><strong><a href="#owasp">1.3 Découvrez l'Open Web Application Security Project (OWASP)</a></strong></li>
+            <li><strong><a href="#owasp10" style='color:red'>Les 10 recommendations (OWASP)</a></strong></li>
             <li><strong><a href="#injection">2.1 Protégez votre code contre l’injection</a></strong></li>
             <li><strong><a href="#session">2.2 Empêchez le piratage de session</a></strong></li>
             <li><strong><a href="#transit_data">2.3 Protégez les données en transit</a></strong></li>
             <li><strong><a href="#data_storage">2.4 Protégez les données stockées sur une application</a></strong></li>
             <li><strong><a href="#acces">2.5 Empêchez l'exploitation des contrôles d'accès</a></strong></li>
             <li><strong><a href="#xss">2.6 Stoppez le cross-site scripting (XSS)</a></strong></li>
+            <li><strong><a href="#xxe">2.7 Protégez votre code contre les failles XXE et la désérialisation non sécurisée</a></strong></li>
         </ul>
       </div>
       <div class="sommaire">
@@ -42,6 +44,7 @@
           <li><a href="https://argon2.online/" target='_blank'>Argon2 - Crypter donnees</a></li>
           <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authorization_Cheat_Sheet.md" target='_blank'>OWASP - Controle acces</a></li>
           <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html" target='_blank'>OWASP XSS</a></li>
+          <li><a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md" target='_blank'>XML External Entity Prevention Cheat Sheet</a></li>
         </ul>
       </div>
     </div>
@@ -163,7 +166,7 @@ Cette base de référence est également utilisée pour répondre à des normes 
 <div class="remarque">
   Pour plus d'informations, reportez-vous sur la page web de l’<a href="https://owasp.org/www-project-top-ten/2017/" target='_blank'>OWASP</a> (en anglais).
 </div><br><br>
-<h3>Appréhendez l'OWASP Top Ten</h3>
+<h3 id='owasp10'>Appréhendez l'OWASP Top Ten</h3>
 Dans le Top Ten de l’OWASP, les attaques sont classées par ordre d’importance.<br>
 Les vulnérabilités présentes dans le Top Ten existent dans les applications web de tous les langages et frameworks.<br>
 Il n'existe pas de langage de programmation exempt de vulnérabilités.<br>
@@ -213,6 +216,7 @@ Voici les 10 attaques les plus fréquentes contre les applications web, selon le
 <li><strong>Désérialisation non sécurisée (Insecure Deserialisation)</strong><br>
   Une vulnérabilité de type “insecure deserialisation” permet à un utilisateur malveillant d'accéder et de modifier les fonctionnalités de l’application ciblée.
 </li>
+<strong><a href="#xxe">2.7 Protégez votre code contre les failles XXE et la désérialisation non sécurisée</a></strong>
 <li><strong>Utilisation de composants présentant des vulnérabilités connues</strong><br>
   Même si votre application est sécurisée, vous devez vous assurer que le framework, les bibliothèques, les appels API et la plateforme que vous utilisez ne sont pas vulnérables.<br>
   Lorsqu'une nouvelle vulnérabilité est découverte, un correctif est généralement proposé.<br>
@@ -1034,11 +1038,209 @@ Cette transaction bancaire se produit à l'insu de l'utilisateur qui peut ou non
 </ul>
 
 
+<h5><a href="#sommaire">Sommaire</a></h5>
+  
+<h2 id="xxe">2.7 Protégez votre code contre les failles XXE et la désérialisation non sécurisée</h2>
+  <h3>Découvrez les XML External Entities (XXE)</h3>
+    Pour comprendre ce que sont les XXE, il faut d’abord définir le langage XML.<br>
+    Le langage XML (Extensible Markup Language) a été créé pour stocker, partager et transporter des données entre systèmes.<br>
+    Il est indépendant de la plateforme et du langage. <br>
+    XML est utilisé pour transmettre des données d'une plateforme à l'autre.<br>
+    Beaucoup d'applications web utilisent XML pour gérer les données.<br>
+    Il ressemble à HTML, mais fonctionne différemment car HTML est utilisé pour présenter les données en hypertexte sur un navigateur.<br>
+    Revenons au formulaire de connexion d'un utilisateur.<br>
+    Ici, vous vous inscrivez sur un site avec votre nom, votre adresse e-mail et votre numéro de téléphone.<br>
+    Une fois que vous avez appuyé sur Entrée, les informations que vous avez tapées deviennent des éléments sous forme XML.<br><br>
+    <div class="code">
+      <<span style="color:rgb(0, 0, 0);">.</span>?xml version="1.0" encoding="ISO-8859-1"?><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>users><br>
+        <br>
+        <span style="color:rgb(0, 0, 0);">.</span><<span style="color:rgb(0, 0, 0);">.</span>user><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>username>Batman<<span style="color:rgb(0, 0, 0);">.</span>/username><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>email>batman@superheroes.bla<<span style="color:rgb(0, 0, 0);">.</span>/email><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>phone>888-123-4567<<span style="color:rgb(0, 0, 0);">.</span>/phone><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>/user><br>
+      <br>
+      <<span style="color:rgb(0, 0, 0);">.</span>/users><br>
+    </div><br><br>
+    En XML, il existe des entités internes et externes.<br>
+    <strong>Une entité interne</strong> est essentiellement une référence XML à un objet interne.<br>
+    Le code ci-dessous représente une entité interne<br>
+    <div class="code">
+      <<span style="color:rgb(0, 0, 0);">.</span>!ENTITY superhero "Batman"><br>
+      <br>
+      <<span style="color:rgb(0, 0, 0);">.</span>!ENTITY origin "Gotham City"><br>
+      <br>
+      <<span style="color:rgb(0, 0, 0);">.</span>character>&superhero;&origin;<<span style="color:rgb(0, 0, 0);">.</span>/character>
+    </div><br><br>
+    <strong>Une entité externe</strong> est une référence XML à une source externe comme un chemin de fichier ou une URL, des images, des références de documents ou des liens de fichiers.<br>
+    Lorsque cette balise d'entité externe est intégrée à une page web, elle sera directement affichée depuis son emplacement externe.<br>
+    Dans l’exemple ci-dessous, la première entité externe, le super-héros, est une URL référencée.<br>
+    La deuxième entité externe, l'origine, fait référence à un chemin de fichier sur un système de fichiers Linux.<br>
+    Le contenu du fichier sur ce chemin sera affiché sur la page web.<br>
+    Le mot clé SYSTEM inclut le fichier référencé dans le document XML.<br><br>
+    <div class="code">
+      <<span style="color:rgb(0, 0, 0);">.</span>!ENTITY superhero SYSTEM "http://www.batman.bla"><br>
+
+    <<span style="color:rgb(0, 0, 0);">.</span>!ENTITY origin SYSTEM "file:///usr/batman"><br>
+
+    <<span style="color:rgb(0, 0, 0);">.</span>character>&superhero;&origin;<<span style="color:rgb(0, 0, 0);">.</span>/character>
+
+    </div>
+
+    <h3>Découvrez le fonctionnement d'une attaque XXE</h3>
+    Une attaque XXE ou injection XXE est un type d'attaque contre une application qui utilise XML.<br>
+    Cette attaque se produit lorsque l'entrée XML contenant une référence à une entité externe est traitée par un analyseur XML mal configuré.<br>
+    Cette attaque peut entraîner la divulgation de données confidentielles, un déni de service, une falsification de requête côté serveur et d'autres impacts sur le système.<br><br>
+    <div class="question"><img src="media/question-circle-regular.svg">Comment un pirate peut-il tirer profit d'une XXE ?</div><br>
+    Regardons la ligne du code ci-dessous.<br>
+    <div class="code">
+      <<span style="color:rgb(0, 0, 0);">.</span>!ENTITY origin SYSTEM "file:///usr/batman">
+    </div><br><br>
+    Lorsque cette entité est référencée, elle affichera le contenu du fichier  <div class="inner_code">/usr/batman</div>.<br>
+    Un attaquant peut avoir délibérément choisi de placer ce chemin d'accès dans le XML pour obtenir <strong>un accès non autorisé</strong> au contenu de ce fichier.<br>
+    Cette attaque est une forme d’injection.<br><br>
+    <div class="question"><img src="media/question-circle-regular.svg">Comment fonctionne l'attaque par injection XML ? </div><br>
+    Pour une page de connexion normale, un développeur web créera une requête AJAX POST vers une page de connexion qui utilisera un nom XML et un mot de passe comme identifiants.<br>
+    Une requête POST est créée pour aller à l'URL  <div class="inner_code">webdevfightshacker.bla/login.html</div><br>    
+    Une fois sur la page de connexion, les données XML présentes dans la variable <strong>xmlHero</strong> rempliront le formulaire Nom et mot de passe.<br>    
+    La demande POST fournit une réponse pour indiquer le succès ou l'échec.<br>
+    <div class="code">
+      var xmlHero = "<br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>hero><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>name>Batgirl<<span style="color:rgb(0, 0, 0);">.</span>/name><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>password>ilovebatman<<span style="color:rgb(0, 0, 0);">.</span>/password><br>
+
+      <<span style="color:rgb(0, 0, 0);">.</span>/hero>”;<br>
+
+      $.ajax<br>
+
+      ({<br>
+
+      type: "POST",<br>
+
+      url: "webdevfightshacker.bla/login.html",<br>
+
+      data: xmlHero,<br>
+
+      success: function(response)<br>
+
+      { console.log(response);<br>
+
+      }<br>
+
+      });
+    </div><br><br>
+    Le code ci-dessus montre une requête POST qui envoie les données XML assignées à la variable <div class="inner_code">xmlHero</div>.<br>
+    La page de connexion qui reçoit cette requête POST utilise ensuite une fonction d'analyse XML pour lire le contenu et l'affecter aux variables qui correspondent au nom d'utilisateur et au mot de passe du formulaire.<br>
+    Une injection XXE est utilisée pour lire le contenu d'un fichier et l'afficher sur le navigateur.<br>
+    Imaginons que le pirate soit intéressé par un dossier spécial appelé <div class="inner_code">secretpower</div> dans le répertoire de <div class="inner_code">Batgirl</div>.<br>
+    Le pirate commence à créer une description de type de document pour une entité nommée <div class="inner_code">hax</div> et lui donne le chemin du fichier.<br>
+<div class="code">
+  <<span style="color:rgb(0, 0, 0);">.</span>!DOCTYPE hax [<<span style="color:rgb(0, 0, 0);">.</span>!ELEMENT hax ANY ><br>
+<<span style="color:rgb(0, 0, 0);">.</span>!ENTITY hax SYSTEM “C:\Users\SBatgirl\Desktop\secretpower”>
+</div><br><br>
+Ensuite, la variable  <div class="inner_code">hax</div>  est référencée comme une entité de caractère externe XML.<br>
+<div class="code">
+  var xmlHero = "<br>
+<<span style="color:rgb(0, 0, 0);">.</span>hero><br>
+    <<span style="color:rgb(0, 0, 0);">.</span>name>&hax;<<span style="color:rgb(0, 0, 0);">.</span>/name><br>
+    <<span style="color:rgb(0, 0, 0);">.</span>password>ilovebatman<<span style="color:rgb(0, 0, 0);">.</span>/password><br>
+<<span style="color:rgb(0, 0, 0);">.</span>/hero>”;
+
+</div><br><br>
+Dans ce cas, l’attaquant sera en mesure de récupérer le mot de passe de Batgirl et d’accéder à ses données.
+
+<h3>Protégez votre code contre les injections XXE</h3>
+Il existe un moyen de désactiver les entités externes dans tous les langages.<br>
+Il s'agit généralement d'une balise binaire vrai/faux.<br><br>
+Par exemple, dans un analyseur XML PHP, le code ressemblerait à ceci :<br>
+<div class="inner_code">libxml_disable_entity_loader (true) ;</div> <br><br>
+Et en Java :<br>
+<div class="code">
+  factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+</div><br><br>
+<div class="remarque">
+  Il existe d'autres API d'analyse XML qui peuvent avoir des entités externes activées par défaut.<br>
+  Pour obtenir la liste de ces API, vous pouvez consultez cette page :<br>
+  <a href="https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.md" target='_blank'>XML External Entity Prevention Cheat Sheet</a>.
+</div>
+<h3>Découvrez la désérialisation non sécurisée</h3>
+La désérialisation non sécurisée est une vulnérabilité qui se produit lorsque des données non fiables sont utilisées pour abuser de la logique d'une application,<br>
+causer un déni de service (DoS, Deny of Service),<br>
+ou même exécuter du code arbitraire.<br>
+Cette vulnérabilité occupe la 8e place du classement OWASP.<br><br>
+Pour comprendre la désérialisation non sécurisée, il faut d’abord comprendre ce qu’est la sérialisation.<br>
+Pour cet exemple, nous allons prendre un objet, comme un nom d'utilisateur et un mot de passe, et le mettre dans la base de données.<br>
+Pour pouvoir être stocké, l'objet devra être converti en flux d'octets pour être transporté à travers le réseau afin d'accéder à la base de données.<br><br>
+C'est ce qu'on appelle la <strong>sérialisation</strong>.<br><br>
+Lorsqu'il y a un appel pour ce même objet dans la base de données, il doit être désérialisé (conversion du flux d'octets en objet) avant son utilisation.<br>
+Ce processus de sérialisation/désérialisation des objets ne se produit pas seulement avec les bases de données.<br>
+Un objet peut changer son état en un flux d'octets lorsqu'il est stocké dans un fichier, d'ordinateur à ordinateur ou en se déplaçant sur le réseau.<br>
+Ces objets peuvent être des cookies, des flux vocaux, des jetons ou des fichiers cache, par exemple.<br>
+La désérialisation non sécurisée est une vulnérabilité qui expose les données à une attaque MITM  (homme du milieu), que nous avons vue précédemment,<br>
+ou à une injection de code qui peut changer l'intégrité de l'objet quand il est désérialisé.<br><br>
+<div class="remarque">
+  Java dispose de bibliothèques dédiées à la sérialisation et à la désérialisation.<br>
+YAML dispose de bibliothèques dédiées à la sérialisation pour différents langages de programmation.
+</div><br><br>
+Par exemple, un cookie avec un identifiant de session et des informations d'identification est envoyé par le navigateur au serveur web exécutant Java.<br>
+Ce cookie est sérialisé en utilisant la classe Java OutputStream avec un constructeur.<br>
+À partir de là, le code malveillant peut être  injecté par un attaquant au moment de la sérialisation.<br>
+Le cookie est désérialisé à l’aide de la classe <strong>ObjectInputStream</strong> de Java, sans constructeur.<br>
+Le constructeur est créé après la création de l'objet.<br>
+Sans vérification ni validation des entrées pendant le processus de désérialisation.<br>
+Un attaquant peut utiliser une classe Java Serializable ou Externalizable car elles sont déjà disponibles dans la bibliothèque.<br>
+Les valeurs peuvent être manipulées pour créer des fonctionnalités différentes de celles de l'objet d'origine.<br><br>
+Voici un exemple avec Java :<br>
+<div class="code">
+  public class Hacked extends Serializable {<br>
+    private String cmd;<br>
+    private void readObject(ObjectInputStream hackedbinary) {<br>
+        hackedbinary.defaultReadObject();<br>
+        Runtime.getRuntime().exec(cmd);<br>
+    }<br>
+}
+</div><br><br>
+Cette classe <div class="inner_code">Hacked</div> crée une bibliothèque utilisée dans le système.<br>
+La valeur de la variable de classe est appelée cmd (qui correspond à l’invite de commande).<br>
+Les méthodes  <div class="inner_code">readObject() defaultReadObject()</div>  désérialisent le binaire pour coïncider avec le processus de sérialisation au début.<br>
+Le fichier  <div class="inner_code">Runtime.getRuntime().exec(cmd)</div>  ouvre une invite de commande permettant à l’attaquant de modifier efficacement la fonctionnalité de l'objet original.<br>
+<h4>Prévenez la désérialisation non sécurisée</h4>
+Dans l'exemple ci-dessus, la classe Java <div class="inner_code">ObjectInputStream</div> restreint l'utilisation arbitraire de cette bibliothèque en l'enveloppant dans la bibliothèque SerialKiller.<br>
+La bibliothèque <a href="https://github.com/ikkisoft/SerialKiller" target='_blank'>Java SerialKiller</a> a été créée pour pallier les problèmes de désérialisation.<br>
+Pour empêcher l'accès privilégié non autorisé à l'aide de l'objet désérialisé, une mesure défensive consisterait à valider les données d'entrée et à vérifier la fonctionnalité de l'objet.
+
+<h3>En résumé</h3>
+<ul>
+  <li><strong>Des entités XML externes</strong><br>
+    peuvent être utilisées pour révéler des données sensibles, des images et des références de documents enregistrées sur un ordinateur.
+  </li>
+  <li><strong>Les entités XML externes</strong><br>
+    devraient être désactivées.
+  </li>
+  <li><strong>La désérialisation non sécurisée</strong><br>
+    est la capacité d'un attaquant à changer l'état du code pendant sa conversion en binaire.
+  </li>
+  <li><strong>La désérialisation non sécurisée</strong><br>
+    peut être évitée en créant des contrôles sur l'état du code.
+  </li>
+</ul>
+
+
 
   </body>
   </html>
   
-  
+
 
 
   <div class="inner_code"></div> 
